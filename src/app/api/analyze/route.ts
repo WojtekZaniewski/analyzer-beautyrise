@@ -4,6 +4,7 @@ import { scrapeInstagram } from "@/lib/instagram";
 import { runResearch, runAnalysis } from "@/lib/openrouter";
 import { SYSTEM_PROMPT, buildResearchPrompt, buildUserPrompt } from "@/lib/analysis-prompt";
 import { sendFullReportEmail, sendErrorNotificationEmail } from "@/lib/email";
+import { scrapeWebsite } from "@/lib/web-scraper";
 import { AnalysisReport } from "@/lib/types";
 
 export const maxDuration = 60;
@@ -13,6 +14,7 @@ const requestSchema = z.object({
   instagramHandle: z.string().min(1),
   problemDescription: z.string().min(10),
   problemCategories: z.array(z.string()),
+  websiteUrl: z.string().url().optional().or(z.literal("")),
   contactName: z.string().optional(),
   email: z.string().email().optional().or(z.literal("")),
 });
@@ -34,8 +36,8 @@ export async function POST(req: Request) {
     try {
       console.log("[analyze] Starting pipeline for:", request.salonName);
 
-      // Phase 1: Scrape Instagram + web research in parallel (both soft-fail)
-      const [instagramData, researchResults] = await Promise.all([
+      // Phase 1: Scrape Instagram + web research + website in parallel (all soft-fail)
+      const [instagramData, researchResults, websiteContent] = await Promise.all([
         scrapeInstagram(request.instagramHandle).catch((err) => {
           console.error("[analyze] Instagram scrape failed:", err);
           return null;
@@ -44,12 +46,18 @@ export async function POST(req: Request) {
           console.error("[analyze] Research failed:", err);
           return "";
         }),
+        request.websiteUrl
+          ? scrapeWebsite(request.websiteUrl).catch((err) => {
+              console.error("[analyze] Website scrape failed:", err);
+              return "";
+            })
+          : Promise.resolve(""),
       ]);
 
-      console.log("[analyze] Phase 1 done. IG:", !!instagramData, "Research length:", researchResults.length);
+      console.log("[analyze] Phase 1 done. IG:", !!instagramData, "Research length:", researchResults.length, "Website length:", websiteContent.length);
 
       // Phase 2: AI analysis based on all collected data
-      const userPrompt = buildUserPrompt(request, instagramData, researchResults);
+      const userPrompt = buildUserPrompt(request, instagramData, researchResults, websiteContent);
       const analysis = await runAnalysis(SYSTEM_PROMPT, userPrompt);
 
       console.log("[analyze] Phase 2 done. Score:", analysis.executiveSummary.overallScore);

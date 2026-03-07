@@ -7,12 +7,13 @@ import { z } from "zod";
 import { InstagramProfile } from "@/lib/types";
 import ProblemChecklist from "./ProblemChecklist";
 import InstagramPreview from "./InstagramPreview";
-import { Search, ArrowRight, Mail, User, CheckCircle, Loader2 } from "lucide-react";
+import { Search, ArrowRight, Mail, User, CheckCircle, Loader2, Globe } from "lucide-react";
 
 const formSchema = z.object({
   contactName: z.string().optional(),
   email: z.string().email("Podaj poprawny adres email").optional().or(z.literal("")),
   salonName: z.string().min(1, "Podaj nazwe swojego salonu"),
+  websiteUrl: z.string().url("Podaj poprawny adres URL").optional().or(z.literal("")),
   instagramHandle: z.string().min(1, "Wpisz nazwe profilu na Instagramie"),
   problemDescription: z
     .string()
@@ -175,6 +176,26 @@ export default function AnalysisForm() {
         />
         {errors.salonName && (
           <p className="text-sm text-red-500 mt-1.5">{errors.salonName.message}</p>
+        )}
+      </div>
+
+      {/* Website URL */}
+      <div>
+        <label className="block text-sm font-medium text-gray-600 mb-2 tracking-wide">
+          Strona internetowa salonu
+          <span className="text-gray-300 font-normal ml-1">(opcjonalnie)</span>
+        </label>
+        <div className="relative">
+          <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+          <input
+            {...register("websiteUrl")}
+            type="url"
+            placeholder="https://example.com"
+            className="w-full pl-11 pr-4 py-3 rounded-xl glass-input outline-none text-gray-900 placeholder:text-gray-300"
+          />
+        </div>
+        {errors.websiteUrl && (
+          <p className="text-sm text-red-500 mt-1.5">{errors.websiteUrl.message}</p>
         )}
       </div>
 

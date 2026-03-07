@@ -14,19 +14,21 @@ export async function runResearch(prompt: string): Promise<string> {
   try {
     const model = getClient().getGenerativeModel({
       model: "gemini-2.5-flash",
+      // @ts-expect-error — googleSearch grounding nie w typach SDK v0.24, ale API je akceptuje
+      tools: [{ googleSearch: {} }],
       generationConfig: {
-        maxOutputTokens: 1500,
+        maxOutputTokens: 4000,
         temperature: 0.3,
       },
     });
-    console.log("[research] Starting...");
+    console.log("[research] Starting with Google Search grounding...");
     const result = await withTimeout(
       model.generateContent(prompt),
-      20000,
+      45000,
       null
     );
     if (!result) {
-      console.error("[research] Timed out after 20s");
+      console.error("[research] Timed out after 45s");
       return "";
     }
     const text = result.response.text();

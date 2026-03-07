@@ -2,6 +2,7 @@
 export interface AnalysisRequest {
   salonName: string;
   instagramHandle: string;
+  websiteUrl?: string;
   problemDescription: string;
   problemCategories: string[];
   contactName?: string;

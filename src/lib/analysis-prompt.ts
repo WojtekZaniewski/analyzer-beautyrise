@@ -46,44 +46,51 @@ Zdefiniuj mierzalne metryki sukcesu z wartoscia obecna (lub szacunkowa) i docelo
 ZAWSZE odpowiadaj WYLACZNIE poprawnym JSON-em.`;
 
 export function buildResearchPrompt(request: AnalysisRequest): string {
-  return `Jestes badaczem rynku beauty w Polsce. Przeprowadz doglebne wyszukiwanie informacji o nastepujacym salonie:
+  const websiteNote = request.websiteUrl
+    ? `Strona www: ${request.websiteUrl} — wyszukaj ja i opisz zawartosc (uslugi, cennik, rezerwacje, UX).`
+    : `Wyszukaj strone internetowa salonu "${request.salonName}" jesli istnieje.`;
 
+  return `Jestes badaczem rynku beauty w Polsce. Masz dostep do wyszukiwarki Google — KORZYSTAJ z niej aktywnie.
+
+## Salon do zbadania
 Nazwa: ${request.salonName}
 Instagram: @${request.instagramHandle}
+${websiteNote}
 ${request.problemDescription ? `Kontekst od klienta: ${request.problemDescription}` : ""}
 
-Wyszukaj i opisz DOKLADNIE:
+## INSTRUKCJE
+Wyszukaj w Google nastepujace zapytania i opisz co FAKTYCZNIE znalazles:
 
-### 1. Obecnosc online
-- Strona internetowa (jesli istnieje): uslugi, cennik, system rezerwacji, UX
-- Google Business Profile: ocena, liczba opinii, najczestsze komentarze (+/-)
-- Platformy rezerwacyjne (Booksy, Moment.pl, Fresha): profil, opinie, uslugi
-- Facebook: aktywnosc, liczba polubien/obserwujacych
-- Inne platformy (TikTok, YouTube, blog)
+### 1. Wyszukaj: "${request.salonName}" salon
+- Strona internetowa: URL, uslugi, cennik, system rezerwacji
+- Google Business Profile: ocena gwiazdkowa, liczba opinii, przykladowe opinie (+/-)
+- Booksy / Moment.pl / Fresha: czy istnieje profil, opinie
+- Facebook: czy istnieje fanpage, ile polubien
+- TikTok, YouTube, blog: czy istnieja
 
-### 2. Analiza konkurencji (benchmarking)
-- 3-5 najblizszych konkurentow w okolicy
-- Porownanie: ceny, oferta uslug, opinie, obecnosc online
-- Wyrozniki konkurencji vs analizowany salon
+### 2. Wyszukaj: "${request.salonName}" opinie
+- Zbierz prawdziwe opinie klientow z roznych zrodel
+- Podsumuj najczestsze pozytywy i negatywy
 
-### 3. Customer Journey
-- Jak klient trafia do salonu (kanaly pozyskiwania)
-- Proces rezerwacji (latwosc, dostepnosc online)
-- Komunikacja po wizycie (follow-up, remarketing)
+### 3. Wyszukaj: salon kosmetyczny + lokalizacja (jesli mozesz ustalic z nazwy/IG)
+- 3-5 konkurentow w okolicy z ich ocenami Google
+- Porownanie cen i oferty
 
-### 4. Rynek lokalny
-- Nasycenie rynku beauty w lokalizacji
-- Trendy w lokalnym rynku
-- Srednie ceny uslug w okolicy
+### 4. Wyszukaj: @${request.instagramHandle} instagram
+- Opis profilu, liczba obserwujacych, rodzaj tresci
 
-Podaj KONKRETNE fakty i dane. Cytuj zrodla.
-Jesli czegos nie znajdziesz, napisz ze nie znaleziono - NIE WYMYSLAJ informacji.`;
+## ZASADY
+- Podaj TYLKO informacje ktore faktycznie znalazles w wyszukiwarce
+- Przy kazdej informacji podaj zrodlo (URL lub nazwa platformy)
+- Jesli czegos NIE ZNALAZLES — napisz wyraznie "Nie znaleziono" zamiast wymyslac
+- NIE GENERUJ fikcyjnych danych, ocen ani opinii`;
 }
 
 export function buildUserPrompt(
   request: AnalysisRequest,
   instagramData: InstagramProfile | null,
-  researchResults: string = ""
+  researchResults: string = "",
+  websiteContent: string = ""
 ): string {
   const igSection = instagramData
     ? formatInstagramData(instagramData)
@@ -93,9 +100,14 @@ export function buildUserPrompt(
     ? researchResults
     : "Brak danych z wyszukiwania internetowego.";
 
+  const websiteSection = websiteContent
+    ? websiteContent
+    : "Strona www niedostepna lub nie podano adresu.";
+
   return `## Informacje o salonie
 - Nazwa: ${request.salonName}
 - Instagram: @${request.instagramHandle}
+${request.websiteUrl ? `- Strona www: ${request.websiteUrl}` : ""}
 - Opis problemu: ${request.problemDescription}
 - Kategorie problemow: ${request.problemCategories.join(", ") || "Nie wybrano"}
 ${request.contactName ? `- Imie klienta: ${request.contactName}` : ""}
@@ -103,7 +115,10 @@ ${request.contactName ? `- Imie klienta: ${request.contactName}` : ""}
 ## Dane z Instagrama
 ${igSection}
 
-## Wyniki badania internetowego
+## Zawartosc strony internetowej
+${websiteSection}
+
+## Wyniki badania internetowego (z Google Search)
 ${researchSection}
 
 ## Instrukcje analizy
