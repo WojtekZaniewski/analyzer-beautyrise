@@ -72,19 +72,22 @@ export async function POST(req: Request) {
 
       return NextResponse.json({ success: true });
     } catch (error) {
-      console.error("[analyze] Pipeline failed:", error);
+      const errMsg = error instanceof Error ? error.message : String(error);
+      const errStack = error instanceof Error ? error.stack : undefined;
+      console.error("[analyze] Pipeline failed:", errMsg, errStack);
       await sendErrorNotificationEmail(request, error).catch((emailErr) =>
         console.error("[analyze] Error email also failed:", emailErr)
       );
       return NextResponse.json(
-        { error: "Wystapil blad podczas analizy. Sprobuj ponownie." },
+        { error: "Wystapil blad podczas analizy. Sprobuj ponownie.", debug: errMsg },
         { status: 500 }
       );
     }
   } catch (error) {
-    console.error("[analyze] Request parse error:", error);
+    const errMsg = error instanceof Error ? error.message : String(error);
+    console.error("[analyze] Request parse error:", errMsg);
     return NextResponse.json(
-      { error: "Wystapil blad podczas analizy. Sprobuj ponownie." },
+      { error: "Wystapil blad podczas analizy. Sprobuj ponownie.", debug: errMsg },
       { status: 500 }
     );
   }
