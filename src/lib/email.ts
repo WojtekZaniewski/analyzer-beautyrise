@@ -1,8 +1,14 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 import { AnalysisReport } from "./types";
 
-function getClient() {
-  return new Resend(process.env.RESEND_API_KEY);
+function getTransporter() {
+  return nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_APP_PASSWORD,
+    },
+  });
 }
 
 function escapeHtml(text: string): string {
@@ -153,8 +159,8 @@ export async function sendFullReportEmail(report: AnalysisReport, researchNotes:
     </div>
   `;
 
-  await getClient().emails.send({
-    from: "BeautyRise Analyzer <onboarding@resend.dev>",
+  await getTransporter().sendMail({
+    from: process.env.GMAIL_USER,
     to: "wojtek@beautyrise.pl",
     subject: `Analiza: ${report.salonName} (@${report.instagramHandle})`,
     html,
@@ -188,8 +194,8 @@ export async function sendErrorNotificationEmail(
     </div>
   `;
 
-  await getClient().emails.send({
-    from: "BeautyRise Analyzer <onboarding@resend.dev>",
+  await getTransporter().sendMail({
+    from: process.env.GMAIL_USER,
     to: "wojtek@beautyrise.pl",
     subject: `BLAD analizy: ${request.salonName}`,
     html,
