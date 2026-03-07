@@ -1,16 +1,18 @@
 import OpenAI from "openai";
 import { AnalysisResult } from "./types";
 
-const client = new OpenAI({
-  baseURL: "https://openrouter.ai/api/v1",
-  apiKey: process.env.OPENROUTER_API_KEY,
-});
+function getClient() {
+  return new OpenAI({
+    baseURL: "https://openrouter.ai/api/v1",
+    apiKey: process.env.OPENROUTER_API_KEY,
+  });
+}
 
 export async function runAnalysis(
   systemPrompt: string,
   userPrompt: string
 ): Promise<AnalysisResult> {
-  const response = await client.chat.completions.create({
+  const response = await getClient().chat.completions.create({
     model: "anthropic/claude-sonnet-4",
     messages: [
       { role: "system", content: systemPrompt },
