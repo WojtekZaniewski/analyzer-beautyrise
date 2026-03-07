@@ -27,7 +27,7 @@ export default function ReportView({ report }: ReportViewProps) {
         className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-orange-600 transition-colors mb-8"
       >
         <ArrowLeft className="w-4 h-4" />
-        Powrot do formularza
+        Nowa analiza
       </Link>
 
       {/* Header */}
@@ -63,7 +63,7 @@ export default function ReportView({ report }: ReportViewProps) {
         {/* Problem description */}
         <div className="mt-5">
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-            Zgloszony problem
+            Twoje wyzwania
           </p>
           <p className="text-sm text-gray-600 leading-relaxed">{report.problemDescription}</p>
           {report.problemCategories.length > 0 && (
@@ -85,7 +85,7 @@ export default function ReportView({ report }: ReportViewProps) {
       {report.instagramData && (
         <div className="mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-4 tracking-tight">
-            Dane z Instagrama
+            Twoj profil na Instagramie
           </h2>
           <InstagramPreview profile={report.instagramData} />
         </div>
@@ -94,7 +94,7 @@ export default function ReportView({ report }: ReportViewProps) {
       {/* Category Scores */}
       <div className="mb-8">
         <h2 className="text-xl font-bold text-gray-900 mb-4 tracking-tight">
-          Analiza szczegolowa
+          Szczegolowa analiza Twojego salonu
         </h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {analysis.categories.map((category, i) => (
@@ -107,7 +107,7 @@ export default function ReportView({ report }: ReportViewProps) {
       {analysis.actionPlan.length > 0 && (
         <div className="mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-4 tracking-tight">
-            Plan dzialania
+            Twoj plan dzialania
           </h2>
           <RecommendationList items={analysis.actionPlan} />
         </div>

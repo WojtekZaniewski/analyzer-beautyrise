@@ -11,10 +11,10 @@ export default function Home() {
             BeautyRise
           </div>
           <h1 className="text-4xl font-bold text-gradient tracking-tight">
-            Salon Analyzer
+            Darmowa analiza Twojego salonu
           </h1>
           <p className="text-gray-400 mt-3 text-lg">
-            Kompleksowa analiza AI salonow beauty
+            Sprawdz jak Twoj salon wypada online i otrzymaj spersonalizowane rekomendacje w 30 sekund
           </p>
         </div>
 

@@ -43,7 +43,7 @@ export function buildUserPrompt(
 - Instagram: @${request.instagramHandle}
 - Opis problemu: ${request.problemDescription}
 - Kategorie problemow: ${request.problemCategories.join(", ") || "Nie wybrano"}
-${request.additionalNotes ? `- Dodatkowe uwagi: ${request.additionalNotes}` : ""}
+${request.contactName ? `- Imie klienta: ${request.contactName}` : ""}
 
 ## Dane z Instagrama
 ${igSection}

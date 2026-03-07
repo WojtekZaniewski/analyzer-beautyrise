@@ -11,7 +11,8 @@ const requestSchema = z.object({
   instagramHandle: z.string().min(1),
   problemDescription: z.string().min(10),
   problemCategories: z.array(z.string()),
-  additionalNotes: z.string().optional(),
+  contactName: z.string().optional(),
+  email: z.string().email().optional().or(z.literal("")),
 });
 
 export async function POST(req: Request) {
@@ -43,6 +44,8 @@ export async function POST(req: Request) {
       instagramHandle: request.instagramHandle,
       problemDescription: request.problemDescription,
       problemCategories: request.problemCategories,
+      contactName: request.contactName || undefined,
+      email: request.email || undefined,
       instagramData,
       analysis,
     };

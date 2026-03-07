@@ -36,9 +36,9 @@ export default function ReportPage() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-5">
         <div className="glass rounded-2xl p-8 text-center">
-          <p className="text-gray-400 mb-4">Raport nie znaleziony</p>
+          <p className="text-gray-400 mb-4">Nie znalezlismy tego raportu</p>
           <Link href="/" className="text-orange-500 hover:text-orange-600 font-medium transition-colors">
-            Powrot do formularza
+            Wykonaj nowa analize
           </Link>
         </div>
       </div>

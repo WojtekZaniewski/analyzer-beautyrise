@@ -4,7 +4,8 @@ export interface AnalysisRequest {
   instagramHandle: string;
   problemDescription: string;
   problemCategories: string[];
-  additionalNotes?: string;
+  contactName?: string;
+  email?: string;
 }
 
 // Instagram scraped data
@@ -39,6 +40,8 @@ export interface AnalysisReport {
   instagramHandle: string;
   problemDescription: string;
   problemCategories: string[];
+  contactName?: string;
+  email?: string;
   instagramData: InstagramProfile | null;
   analysis: AnalysisResult;
 }

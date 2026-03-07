@@ -9,15 +9,16 @@ import { InstagramProfile, AnalysisReport } from "@/lib/types";
 import ProblemChecklist from "./ProblemChecklist";
 import InstagramPreview from "./InstagramPreview";
 import LoadingState from "./LoadingState";
-import { Search, Send } from "lucide-react";
+import { Search, ArrowRight, Mail, User } from "lucide-react";
 
 const formSchema = z.object({
-  salonName: z.string().min(1, "Podaj nazwe salonu"),
-  instagramHandle: z.string().min(1, "Podaj handle Instagram"),
+  contactName: z.string().optional(),
+  email: z.string().email("Podaj poprawny adres email").optional().or(z.literal("")),
+  salonName: z.string().min(1, "Podaj nazwe swojego salonu"),
+  instagramHandle: z.string().min(1, "Wpisz nazwe profilu na Instagramie"),
   problemDescription: z
     .string()
-    .min(10, "Opis problemu musi miec minimum 10 znakow"),
-  additionalNotes: z.string().optional(),
+    .min(10, "Napisz kilka slow o swoim salonie (min. 10 znakow)"),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -110,15 +111,51 @@ export default function AnalysisForm() {
         </div>
       )}
 
+      {/* Contact Info */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-2 tracking-wide">
+            Twoje imie
+          </label>
+          <div className="relative">
+            <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+            <input
+              {...register("contactName")}
+              type="text"
+              placeholder="np. Anna"
+              className="w-full pl-11 pr-4 py-3 rounded-xl glass-input outline-none text-gray-900 placeholder:text-gray-300"
+            />
+          </div>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-2 tracking-wide">
+            Email
+            <span className="text-gray-300 font-normal ml-1">(opcjonalnie)</span>
+          </label>
+          <div className="relative">
+            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+            <input
+              {...register("email")}
+              type="email"
+              placeholder="anna@example.com"
+              className="w-full pl-11 pr-4 py-3 rounded-xl glass-input outline-none text-gray-900 placeholder:text-gray-300"
+            />
+          </div>
+          {errors.email && (
+            <p className="text-sm text-red-500 mt-1.5">{errors.email.message}</p>
+          )}
+        </div>
+      </div>
+
       {/* Salon Name */}
       <div>
         <label className="block text-sm font-medium text-gray-600 mb-2 tracking-wide">
-          Nazwa salonu
+          Nazwa Twojego salonu
         </label>
         <input
           {...register("salonName")}
           type="text"
-          placeholder="np. Beauty Studio Anna"
+          placeholder="np. Studio Urody Anna"
           className="w-full px-4 py-3 rounded-xl glass-input outline-none text-gray-900 placeholder:text-gray-300"
         />
         {errors.salonName && (
@@ -129,7 +166,7 @@ export default function AnalysisForm() {
       {/* Instagram Handle */}
       <div>
         <label className="block text-sm font-medium text-gray-600 mb-2 tracking-wide">
-          Instagram
+          Profil Instagram salonu
         </label>
         <div className="flex gap-2">
           <div className="relative flex-1">
@@ -153,6 +190,7 @@ export default function AnalysisForm() {
             {igLoading ? "Szukam..." : "Podglad"}
           </button>
         </div>
+        <p className="text-xs text-gray-400 mt-1.5">Przeanalizujemy Twoj profil automatycznie</p>
         {errors.instagramHandle && (
           <p className="text-sm text-red-500 mt-1.5">
             {errors.instagramHandle.message}
@@ -168,7 +206,7 @@ export default function AnalysisForm() {
       {/* Problem Categories */}
       <div>
         <label className="block text-sm font-medium text-gray-600 mb-3 tracking-wide">
-          Kategorie problemow
+          Z czym potrzebujesz pomocy?
         </label>
         <ProblemChecklist
           selected={problemCategories}
@@ -179,12 +217,12 @@ export default function AnalysisForm() {
       {/* Problem Description */}
       <div>
         <label className="block text-sm font-medium text-gray-600 mb-2 tracking-wide">
-          Opis problemu
+          Opowiedz nam wiecej
         </label>
         <textarea
           {...register("problemDescription")}
           rows={4}
-          placeholder="Opisz szczegolowo problem salonu, z czym sie zmaga, co chce osiagnac..."
+          placeholder="Co chcialabys poprawic w swoim salonie? Jakie sa Twoje cele?"
           className="w-full px-4 py-3 rounded-xl glass-input outline-none text-gray-900 placeholder:text-gray-300 resize-y"
         />
         {errors.problemDescription && (
@@ -194,26 +232,13 @@ export default function AnalysisForm() {
         )}
       </div>
 
-      {/* Additional Notes */}
-      <div>
-        <label className="block text-sm font-medium text-gray-600 mb-2 tracking-wide">
-          Dodatkowe uwagi
-        </label>
-        <textarea
-          {...register("additionalNotes")}
-          rows={2}
-          placeholder="Opcjonalne dodatkowe informacje..."
-          className="w-full px-4 py-3 rounded-xl glass-input outline-none text-gray-900 placeholder:text-gray-300 resize-y"
-        />
-      </div>
-
       {/* Submit */}
       <button
         type="submit"
-        className="w-full flex items-center justify-center gap-2.5 px-6 py-3.5 btn-gradient text-white font-semibold rounded-2xl text-base"
+        className="w-full flex items-center justify-center gap-2.5 px-6 py-4 btn-gradient text-white font-semibold rounded-2xl text-base"
       >
-        <Send className="w-4 h-4" />
-        Analizuj salon
+        Otrzymaj darmowa analize
+        <ArrowRight className="w-4 h-4" />
       </button>
     </form>
   );

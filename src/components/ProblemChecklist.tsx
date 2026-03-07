@@ -1,16 +1,16 @@
 "use client";
 
 const PROBLEM_OPTIONS = [
-  { id: "low-engagement", label: "Niski engagement / malo followerow" },
-  { id: "inconsistent-posting", label: "Niespojne postowanie" },
-  { id: "weak-branding", label: "Slaby branding wizualny" },
-  { id: "no-target-audience", label: "Brak jasnej grupy docelowej" },
-  { id: "weak-online-presence", label: "Slaba obecnosc online" },
-  { id: "pricing-issues", label: "Problemy z cenami" },
-  { id: "low-retention", label: "Niska retencja klientow" },
-  { id: "no-booking-system", label: "Brak systemu rezerwacji" },
-  { id: "no-reviews", label: "Brak opinii / testimoniali" },
-  { id: "competition", label: "Presja konkurencji" },
+  { id: "low-engagement", label: "Chce miec wiecej obserwujacych" },
+  { id: "inconsistent-posting", label: "Nie mam czasu na regularne posty" },
+  { id: "weak-branding", label: "Moj profil nie wyglada profesjonalnie" },
+  { id: "no-target-audience", label: "Nie wiem do kogo kierowac komunikacje" },
+  { id: "weak-online-presence", label: "Klienci nie znajduja mnie w internecie" },
+  { id: "pricing-issues", label: "Nie wiem czy moje ceny sa odpowiednie" },
+  { id: "low-retention", label: "Klienci nie wracaja regularnie" },
+  { id: "no-booking-system", label: "Chce usprawnic rezerwacje online" },
+  { id: "no-reviews", label: "Mam malo opinii od klientow" },
+  { id: "competition", label: "Trudno mi wyroznic sie na tle konkurencji" },
 ] as const;
 
 interface ProblemChecklistProps {

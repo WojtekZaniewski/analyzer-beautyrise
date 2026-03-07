@@ -3,10 +3,10 @@
 import { Loader2 } from "lucide-react";
 
 const STEPS = [
-  "Pobieranie danych z Instagrama...",
-  "Analiza profilu i contentu...",
-  "Generowanie raportu AI...",
-  "Finalizacja rekomendacji...",
+  "Sprawdzamy Twoj profil na Instagramie...",
+  "Analizujemy Twoje posty i zaangazowanie...",
+  "Przygotowujemy spersonalizowane rekomendacje...",
+  "Juz prawie gotowe...",
 ];
 
 interface LoadingStateProps {
@@ -22,7 +22,7 @@ export default function LoadingState({ step = 0 }: LoadingStateProps) {
       </div>
       <div className="text-center">
         <p className="text-xl font-semibold text-gray-900">
-          Analizujemy salon...
+          Przygotowujemy Twoja analize...
         </p>
         <p className="text-sm text-gray-400 mt-2">
           {STEPS[Math.min(step, STEPS.length - 1)]}
