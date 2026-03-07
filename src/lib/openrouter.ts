@@ -13,7 +13,7 @@ function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T
 export async function runResearch(prompt: string): Promise<string> {
   try {
     const model = getClient().getGenerativeModel({
-      model: "gemini-2.0-flash",
+      model: "gemini-2.5-flash",
       generationConfig: {
         maxOutputTokens: 1500,
         temperature: 0.3,
@@ -143,10 +143,10 @@ export async function runAnalysis(
   userPrompt: string
 ): Promise<AnalysisResult> {
   const model = getClient().getGenerativeModel({
-    model: "gemini-2.0-flash",
+    model: "gemini-1.5-flash",
     systemInstruction: systemPrompt,
     generationConfig: {
-      maxOutputTokens: 4000,
+      maxOutputTokens: 8000,
       temperature: 0.3,
       responseMimeType: "application/json",
       responseSchema: analysisSchema,
