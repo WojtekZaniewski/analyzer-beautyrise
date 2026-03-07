@@ -1,22 +1,21 @@
-import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { AnalysisResult } from "./types";
 
 function getClient() {
-  return new OpenAI({
-    baseURL: "https://openrouter.ai/api/v1",
-    apiKey: process.env.OPENROUTER_API_KEY,
-  });
+  return new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 }
 
 export async function runResearch(prompt: string): Promise<string> {
   try {
-    const response = await getClient().chat.completions.create({
-      model: "google/gemini-2.5-flash",
-      messages: [{ role: "user", content: prompt }],
-      max_tokens: 4000,
-      temperature: 0.3,
+    const model = getClient().getGenerativeModel({
+      model: "gemini-2.5-flash",
+      generationConfig: {
+        maxOutputTokens: 4000,
+        temperature: 0.3,
+      },
     });
-    return response.choices[0]?.message?.content ?? "";
+    const result = await model.generateContent(prompt);
+    return result.response.text();
   } catch (error) {
     console.error("Research failed:", error);
     return "";
@@ -27,17 +26,17 @@ export async function runAnalysis(
   systemPrompt: string,
   userPrompt: string
 ): Promise<AnalysisResult> {
-  const response = await getClient().chat.completions.create({
-    model: "google/gemini-2.5-flash",
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: userPrompt },
-    ],
-    max_tokens: 4000,
-    temperature: 0.3,
+  const model = getClient().getGenerativeModel({
+    model: "gemini-2.5-flash",
+    systemInstruction: systemPrompt,
+    generationConfig: {
+      maxOutputTokens: 4000,
+      temperature: 0.3,
+    },
   });
 
-  const content = response.choices[0]?.message?.content ?? "";
+  const result = await model.generateContent(userPrompt);
+  const content = result.response.text();
 
   // Extract JSON from response (handle markdown code blocks)
   const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
@@ -46,7 +45,6 @@ export async function runAnalysis(
   try {
     return JSON.parse(jsonStr) as AnalysisResult;
   } catch {
-    // Fallback: return a basic result with raw text
     return {
       overallScore: 0,
       summary: content,
