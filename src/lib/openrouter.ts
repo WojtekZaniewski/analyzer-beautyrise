@@ -13,7 +13,7 @@ export async function runAnalysis(
   userPrompt: string
 ): Promise<AnalysisResult> {
   const response = await getClient().chat.completions.create({
-    model: "anthropic/claude-sonnet-4",
+    model: "google/gemini-2.5-flash",
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt },
