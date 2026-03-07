@@ -32,15 +32,27 @@ export async function POST(req: Request) {
     const request = parsed.data;
 
     try {
-      // Phase 1: Scrape Instagram + web research in parallel
+      console.log("[analyze] Starting pipeline for:", request.salonName);
+
+      // Phase 1: Scrape Instagram + web research in parallel (both soft-fail)
       const [instagramData, researchResults] = await Promise.all([
-        scrapeInstagram(request.instagramHandle),
-        runResearch(buildResearchPrompt(request)),
+        scrapeInstagram(request.instagramHandle).catch((err) => {
+          console.error("[analyze] Instagram scrape failed:", err);
+          return null;
+        }),
+        runResearch(buildResearchPrompt(request)).catch((err) => {
+          console.error("[analyze] Research failed:", err);
+          return "";
+        }),
       ]);
+
+      console.log("[analyze] Phase 1 done. IG:", !!instagramData, "Research length:", researchResults.length);
 
       // Phase 2: AI analysis based on all collected data
       const userPrompt = buildUserPrompt(request, instagramData, researchResults);
       const analysis = await runAnalysis(SYSTEM_PROMPT, userPrompt);
+
+      console.log("[analyze] Phase 2 done. Score:", analysis.overallScore);
 
       const report: AnalysisReport = {
         id: crypto.randomUUID(),
@@ -56,18 +68,21 @@ export async function POST(req: Request) {
       };
 
       await sendFullReportEmail(report, researchResults);
+      console.log("[analyze] Email sent successfully");
 
       return NextResponse.json({ success: true });
     } catch (error) {
-      console.error("Analysis pipeline failed:", error);
-      await sendErrorNotificationEmail(request, error).catch(console.error);
+      console.error("[analyze] Pipeline failed:", error);
+      await sendErrorNotificationEmail(request, error).catch((emailErr) =>
+        console.error("[analyze] Error email also failed:", emailErr)
+      );
       return NextResponse.json(
         { error: "Wystapil blad podczas analizy. Sprobuj ponownie." },
         { status: 500 }
       );
     }
   } catch (error) {
-    console.error("Request error:", error);
+    console.error("[analyze] Request parse error:", error);
     return NextResponse.json(
       { error: "Wystapil blad podczas analizy. Sprobuj ponownie." },
       { status: 500 }
