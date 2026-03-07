@@ -88,6 +88,7 @@ export default function AnalysisForm() {
       }
 
       const report: AnalysisReport = await res.json();
+      sessionStorage.setItem(`report-${report.id}`, JSON.stringify(report));
       router.push(`/report/${report.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Wystapil nieoczekiwany blad");
