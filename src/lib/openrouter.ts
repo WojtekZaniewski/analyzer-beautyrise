@@ -32,19 +32,27 @@ export async function runAnalysis(
     generationConfig: {
       maxOutputTokens: 4000,
       temperature: 0.3,
+      responseMimeType: "application/json",
     },
   });
 
   const result = await model.generateContent(userPrompt);
   const content = result.response.text();
 
-  // Extract JSON from response (handle markdown code blocks)
-  const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
-  const jsonStr = jsonMatch ? jsonMatch[1].trim() : content.trim();
+  console.log("[analysis] Raw response length:", content.length);
+  console.log("[analysis] First 500 chars:", content.slice(0, 500));
 
   try {
-    return JSON.parse(jsonStr) as AnalysisResult;
-  } catch {
+    return JSON.parse(content) as AnalysisResult;
+  } catch (err) {
+    console.error("[analysis] JSON parse failed:", err);
+    // Fallback: try to extract JSON from markdown code blocks
+    const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (jsonMatch) {
+      try {
+        return JSON.parse(jsonMatch[1].trim()) as AnalysisResult;
+      } catch { /* fall through */ }
+    }
     return {
       overallScore: 0,
       summary: content,
