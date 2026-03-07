@@ -7,6 +7,9 @@ Twoja analiza musi byc:
 - Praktyczna - z actionable rekomendacjami
 - Uczciwa - wskazuj zarowno mocne strony jak i problemy
 - Dostosowana do polskiego rynku beauty
+- Oparta na faktach znalezionych w internecie i danych z Instagrama
+- Odwoluj sie do konkretnych znalezionych informacji (opinie Google, strona www, konkurencja)
+- Nie generuj ogolnikowych porad - kazda rekomendacja musi wynikac z konkretnej obserwacji
 
 ZAWSZE odpowiadaj WYLACZNIE poprawnym JSON-em (bez markdown, bez komentarzy) w nastepujacym formacie:
 {
@@ -30,13 +33,39 @@ ZAWSZE odpowiadaj WYLACZNIE poprawnym JSON-em (bez markdown, bez komentarzy) w n
   ]
 }`;
 
+export function buildResearchPrompt(request: AnalysisRequest): string {
+  return `Jestes badaczem rynku beauty w Polsce. Przeprowadz doglebne wyszukiwanie informacji o nastepujacym salonie:
+
+Nazwa: ${request.salonName}
+Instagram: @${request.instagramHandle}
+${request.problemDescription ? `Kontekst od klienta: ${request.problemDescription}` : ""}
+
+Wyszukaj i opisz DOKLADNIE:
+1. Strone internetowa salonu (jesli istnieje) - jakie uslugi oferuja, cennik, system rezerwacji online
+2. Opinie Google - srednia ocena, liczba opinii, najczestsze komentarze pozytywne i negatywne
+3. Obecnosc na platformach rezerwacyjnych (Booksy, Moment.pl, Fresha itp.) - czy maja profil, ile opinii, jakie uslugi
+4. Profil na Facebooku - czy jest aktywny, ile ma polubien/obserwujacych
+5. Konkurencja w okolicy - jakie inne salony beauty dzialaja w tej samej lokalizacji, jak sie pozycjonuja
+6. Wszelkie wzmianki w mediach, blogach, portalach branzy beauty
+7. Cennik i pozycjonowanie cenowe vs konkurencja (jesli dane dostepne)
+8. Obecnosc w Google Maps / Google Business Profile
+
+Podaj KONKRETNE fakty i dane znalezione w internecie. Cytuj zrodla.
+Jesli czegos nie znajdziesz, napisz ze nie znaleziono - NIE WYMYSLAJ informacji.`;
+}
+
 export function buildUserPrompt(
   request: AnalysisRequest,
-  instagramData: InstagramProfile | null
+  instagramData: InstagramProfile | null,
+  researchResults: string = ""
 ): string {
   const igSection = instagramData
     ? formatInstagramData(instagramData)
     : "Dane z Instagrama niedostepne - analizuj na podstawie pozostalych informacji.";
+
+  const researchSection = researchResults
+    ? researchResults
+    : "Brak danych z wyszukiwania internetowego.";
 
   return `## Informacje o salonie
 - Nazwa: ${request.salonName}
@@ -48,7 +77,12 @@ ${request.contactName ? `- Imie klienta: ${request.contactName}` : ""}
 ## Dane z Instagrama
 ${igSection}
 
+## Wyniki badania internetowego
+${researchSection}
+
 ## Instrukcje analizy
+
+WAZNE: Twoja analiza MUSI opierac sie na faktach znalezionych w badaniu internetowym i danych z Instagrama. Nie generuj ogolnikowych porad - odwoluj sie do konkretnych obserwacji z profilu i znalezionych informacji online.
 
 Przeanalizuj ten salon w nastepujacych kategoriach. Dla kazdej podaj ocene (1-10), obserwacje i rekomendacje:
 

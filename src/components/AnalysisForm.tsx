@@ -4,12 +4,10 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useRouter } from "next/navigation";
-import { InstagramProfile, AnalysisReport } from "@/lib/types";
+import { InstagramProfile } from "@/lib/types";
 import ProblemChecklist from "./ProblemChecklist";
 import InstagramPreview from "./InstagramPreview";
-import LoadingState from "./LoadingState";
-import { Search, ArrowRight, Mail, User } from "lucide-react";
+import { Search, ArrowRight, Mail, User, CheckCircle } from "lucide-react";
 
 const formSchema = z.object({
   contactName: z.string().optional(),
@@ -24,12 +22,11 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export default function AnalysisForm() {
-  const router = useRouter();
   const [problemCategories, setProblemCategories] = useState<string[]>([]);
   const [igProfile, setIgProfile] = useState<InstagramProfile | null>(null);
   const [igLoading, setIgLoading] = useState(false);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [loadingStep, setLoadingStep] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const {
@@ -65,13 +62,8 @@ export default function AnalysisForm() {
   };
 
   const onSubmit = async (data: FormData) => {
-    setIsAnalyzing(true);
+    setIsSubmitting(true);
     setError(null);
-    setLoadingStep(0);
-
-    const stepInterval = setInterval(() => {
-      setLoadingStep((prev) => Math.min(prev + 1, 3));
-    }, 5000);
 
     try {
       const res = await fetch("/api/analyze", {
@@ -88,19 +80,27 @@ export default function AnalysisForm() {
         throw new Error(err.error || "Blad analizy");
       }
 
-      const report: AnalysisReport = await res.json();
-      sessionStorage.setItem(`report-${report.id}`, JSON.stringify(report));
-      router.push(`/report/${report.id}`);
+      setSubmitted(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Wystapil nieoczekiwany blad");
-      setIsAnalyzing(false);
     } finally {
-      clearInterval(stepInterval);
+      setIsSubmitting(false);
     }
   };
 
-  if (isAnalyzing) {
-    return <LoadingState step={loadingStep} />;
+  if (submitted) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 gap-6 text-center">
+        <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center">
+          <CheckCircle className="w-8 h-8 text-green-500" />
+        </div>
+        <h2 className="text-2xl font-semibold text-gray-900">Dziekujemy!</h2>
+        <p className="text-gray-500 max-w-md leading-relaxed">
+          Nasz zespol wkrotce odezwie sie z pelna analiza Twojego profilu.
+          Przygotowujemy dla Ciebie spersonalizowany raport oparty na doglebnym badaniu.
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -235,10 +235,11 @@ export default function AnalysisForm() {
       {/* Submit */}
       <button
         type="submit"
-        className="w-full flex items-center justify-center gap-2.5 px-6 py-4 btn-gradient text-white font-semibold rounded-2xl text-base"
+        disabled={isSubmitting}
+        className="w-full flex items-center justify-center gap-2.5 px-6 py-4 btn-gradient text-white font-semibold rounded-2xl text-base disabled:opacity-60"
       >
-        Otrzymaj darmowa analize
-        <ArrowRight className="w-4 h-4" />
+        {isSubmitting ? "Wysylanie..." : "Otrzymaj darmowa analize"}
+        {!isSubmitting && <ArrowRight className="w-4 h-4" />}
       </button>
     </form>
   );
