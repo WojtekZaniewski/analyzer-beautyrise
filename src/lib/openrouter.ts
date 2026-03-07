@@ -8,7 +8,7 @@ function getClient() {
 export async function runResearch(prompt: string): Promise<string> {
   try {
     const model = getClient().getGenerativeModel({
-      model: "gemini-2.5-flash",
+      model: "gemini-2.0-flash",
       generationConfig: {
         maxOutputTokens: 4000,
         temperature: 0.3,
