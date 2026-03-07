@@ -1,10 +1,12 @@
-import { NextResponse, after } from "next/server";
+import { NextResponse } from "next/server";
 import { z } from "zod";
 import { scrapeInstagram } from "@/lib/instagram";
 import { runResearch, runAnalysis } from "@/lib/openrouter";
 import { SYSTEM_PROMPT, buildResearchPrompt, buildUserPrompt } from "@/lib/analysis-prompt";
 import { sendFullReportEmail, sendErrorNotificationEmail } from "@/lib/email";
 import { AnalysisReport } from "@/lib/types";
+
+export const maxDuration = 60;
 
 const requestSchema = z.object({
   salonName: z.string().min(1),
@@ -29,41 +31,43 @@ export async function POST(req: Request) {
 
     const request = parsed.data;
 
-    after(async () => {
-      try {
-        // Phase 1: Scrape Instagram + web research in parallel
-        const [instagramData, researchResults] = await Promise.all([
-          scrapeInstagram(request.instagramHandle),
-          runResearch(buildResearchPrompt(request)),
-        ]);
+    try {
+      // Phase 1: Scrape Instagram + web research in parallel
+      const [instagramData, researchResults] = await Promise.all([
+        scrapeInstagram(request.instagramHandle),
+        runResearch(buildResearchPrompt(request)),
+      ]);
 
-        // Phase 2: AI analysis based on all collected data
-        const userPrompt = buildUserPrompt(request, instagramData, researchResults);
-        const analysis = await runAnalysis(SYSTEM_PROMPT, userPrompt);
+      // Phase 2: AI analysis based on all collected data
+      const userPrompt = buildUserPrompt(request, instagramData, researchResults);
+      const analysis = await runAnalysis(SYSTEM_PROMPT, userPrompt);
 
-        const report: AnalysisReport = {
-          id: crypto.randomUUID(),
-          createdAt: new Date().toISOString(),
-          salonName: request.salonName,
-          instagramHandle: request.instagramHandle,
-          problemDescription: request.problemDescription,
-          problemCategories: request.problemCategories,
-          contactName: request.contactName || undefined,
-          email: request.email || undefined,
-          instagramData,
-          analysis,
-        };
+      const report: AnalysisReport = {
+        id: crypto.randomUUID(),
+        createdAt: new Date().toISOString(),
+        salonName: request.salonName,
+        instagramHandle: request.instagramHandle,
+        problemDescription: request.problemDescription,
+        problemCategories: request.problemCategories,
+        contactName: request.contactName || undefined,
+        email: request.email || undefined,
+        instagramData,
+        analysis,
+      };
 
-        await sendFullReportEmail(report, researchResults);
-      } catch (error) {
-        console.error("Background analysis failed:", error);
-        await sendErrorNotificationEmail(request, error).catch(console.error);
-      }
-    });
+      await sendFullReportEmail(report, researchResults);
 
-    return NextResponse.json({ success: true });
+      return NextResponse.json({ success: true });
+    } catch (error) {
+      console.error("Analysis pipeline failed:", error);
+      await sendErrorNotificationEmail(request, error).catch(console.error);
+      return NextResponse.json(
+        { error: "Wystapil blad podczas analizy. Sprobuj ponownie." },
+        { status: 500 }
+      );
+    }
   } catch (error) {
-    console.error("Analysis error:", error);
+    console.error("Request error:", error);
     return NextResponse.json(
       { error: "Wystapil blad podczas analizy. Sprobuj ponownie." },
       { status: 500 }

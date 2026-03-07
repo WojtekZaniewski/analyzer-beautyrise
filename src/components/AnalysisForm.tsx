@@ -7,7 +7,7 @@ import { z } from "zod";
 import { InstagramProfile } from "@/lib/types";
 import ProblemChecklist from "./ProblemChecklist";
 import InstagramPreview from "./InstagramPreview";
-import { Search, ArrowRight, Mail, User, CheckCircle } from "lucide-react";
+import { Search, ArrowRight, Mail, User, CheckCircle, Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   contactName: z.string().optional(),
@@ -87,6 +87,21 @@ export default function AnalysisForm() {
       setIsSubmitting(false);
     }
   };
+
+  if (isSubmitting) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 gap-6 text-center">
+        <div className="relative">
+          <div className="absolute inset-0 rounded-full bg-orange-400/20 blur-xl animate-pulse" />
+          <Loader2 className="relative w-12 h-12 text-orange-500 animate-spin" />
+        </div>
+        <h2 className="text-xl font-semibold text-gray-900">Analizujemy Twoj profil...</h2>
+        <p className="text-gray-400 max-w-sm leading-relaxed text-sm">
+          Przeprowadzamy doglebne badanie Twojego salonu w internecie. To moze zajac do minuty.
+        </p>
+      </div>
+    );
+  }
 
   if (submitted) {
     return (
