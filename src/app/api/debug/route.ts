@@ -1,25 +1,34 @@
 import { NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import nodemailer from "nodemailer";
 
 export async function GET() {
   const results: Record<string, unknown> = {};
 
   results.envVars = {
-    GEMINI_API_KEY: process.env.GEMINI_API_KEY ? "SET (" + process.env.GEMINI_API_KEY.slice(0, 8) + "...)" : "MISSING",
+    OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY ? "SET (" + process.env.OPENROUTER_API_KEY.slice(0, 8) + "...)" : "MISSING",
     SMTP_HOST: process.env.SMTP_HOST || "(default: smtp.mail.me.com)",
     SMTP_USER: process.env.SMTP_USER || "MISSING",
     SMTP_PASSWORD: process.env.SMTP_PASSWORD ? "SET (length: " + process.env.SMTP_PASSWORD.length + ")" : "MISSING",
   };
 
-  // Test Gemini
+  // Test OpenRouter
   try {
-    const ai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-    const model = ai.getGenerativeModel({ model: "gemini-2.5-flash" });
-    const result = await model.generateContent("Odpowiedz jednym slowem: OK");
-    results.gemini = { status: "OK", response: result.response.text() };
+    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "meta-llama/llama-3.3-70b-instruct:free",
+        messages: [{ role: "user", content: "Odpowiedz jednym slowem: OK" }],
+        max_tokens: 10,
+      }),
+    });
+    const data = await res.json();
+    results.openrouter = { status: res.ok ? "OK" : "ERROR", response: data.choices?.[0]?.message?.content || data };
   } catch (err) {
-    results.gemini = { error: String(err) };
+    results.openrouter = { error: String(err) };
   }
 
   // Test SMTP

@@ -37,13 +37,48 @@ Obowiazkowo przeprowadz analize SWOT oparta na faktach.
 Zdefiniuj mierzalne metryki sukcesu z wartoscia obecna (lub szacunkowa) i docelowa.
 
 ## Zasady analizy
-- Opieraj sie WYLACZNIE na faktach z danych (Instagram, research internetowy)
+- Opieraj sie WYLACZNIE na faktach z danych (Instagram, research internetowy, strona www)
 - NIE WYMYSLAJ informacji — jesli brak danych, napisz ze nie znaleziono
 - Kazda rekomendacja musi wynikac z konkretnej obserwacji
-- Uzywaj jezykow polskiego
+- Uzywaj jezyka polskiego
 - Badz bezposredni i konkretny — zero ogolnikow
 
-ZAWSZE odpowiadaj WYLACZNIE poprawnym JSON-em.`;
+## FORMAT ODPOWIEDZI
+ZAWSZE odpowiadaj WYLACZNIE poprawnym JSON-em zgodnym z ponizszym schema:
+{
+  "executiveSummary": {
+    "situation": "Obecny stan salonu (fakty)",
+    "complication": "Zidentyfikowany problem",
+    "resolution": "Glowna rekomendacja strategiczna",
+    "overallScore": 7
+  },
+  "swot": {
+    "strengths": ["..."],
+    "weaknesses": ["..."],
+    "opportunities": ["..."],
+    "threats": ["..."]
+  },
+  "categories": [
+    {
+      "name": "Nazwa kategorii",
+      "score": 7,
+      "hypothesis": "Hipoteza do przetestowania",
+      "evidence": ["Dowod 1", "Dowod 2", "Dowod 3"],
+      "findings": ["Wniosek 1", "Wniosek 2", "Wniosek 3"],
+      "recommendations": ["Rekomendacja 1", "Rekomendacja 2", "Rekomendacja 3"]
+    }
+  ],
+  "actionPlan": {
+    "quickWins": [{ "area": "...", "action": "...", "expectedImpact": "...", "kpiMetric": "..." }],
+    "coreChanges": [{ "area": "...", "action": "...", "expectedImpact": "...", "kpiMetric": "..." }],
+    "transformation": [{ "area": "...", "action": "...", "expectedImpact": "...", "kpiMetric": "..." }]
+  },
+  "keyMetrics": [
+    { "metric": "...", "current": "...", "target": "...", "timeline": "..." }
+  ]
+}
+
+WAZNE: Odpowiedz MUSI byc TYLKO JSON — bez zadnego tekstu przed ani po JSON-ie. Nie uzywaj markdown code blocks.`;
 
 export function buildResearchPrompt(request: AnalysisRequest): string {
   const websiteNote = request.websiteUrl
