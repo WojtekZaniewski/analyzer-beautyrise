@@ -5,17 +5,33 @@ function getClient() {
   return new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 }
 
+function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
+  const timeout = new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms));
+  return Promise.race([promise, timeout]);
+}
+
 export async function runResearch(prompt: string): Promise<string> {
   try {
     const model = getClient().getGenerativeModel({
       model: "gemini-2.0-flash",
       generationConfig: {
-        maxOutputTokens: 4000,
+        maxOutputTokens: 1500,
         temperature: 0.3,
       },
     });
-    const result = await model.generateContent(prompt);
-    return result.response.text();
+    console.log("[research] Starting...");
+    const result = await withTimeout(
+      model.generateContent(prompt),
+      20000,
+      null
+    );
+    if (!result) {
+      console.error("[research] Timed out after 20s");
+      return "";
+    }
+    const text = result.response.text();
+    console.log("[research] Done, length:", text.length);
+    return text;
   } catch (error) {
     console.error("Research failed:", error);
     return "";
@@ -130,17 +146,18 @@ export async function runAnalysis(
     model: "gemini-2.0-flash",
     systemInstruction: systemPrompt,
     generationConfig: {
-      maxOutputTokens: 8000,
+      maxOutputTokens: 4000,
       temperature: 0.3,
       responseMimeType: "application/json",
       responseSchema: analysisSchema,
     },
   });
 
+  console.log("[analysis] Starting...");
   const result = await model.generateContent(userPrompt);
   const content = result.response.text();
 
-  console.log("[analysis] Raw response length:", content.length);
+  console.log("[analysis] Done, length:", content.length);
   console.log("[analysis] First 300 chars:", content.slice(0, 300));
 
   try {
