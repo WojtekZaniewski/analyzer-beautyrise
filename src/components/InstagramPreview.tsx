@@ -22,50 +22,50 @@ export default function InstagramPreview({ profile }: InstagramPreviewProps) {
       : null;
 
   return (
-    <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-      <div className="flex items-center gap-3 mb-3">
+    <div className="glass rounded-2xl p-5">
+      <div className="flex items-center gap-3 mb-4">
         {profile.profilePicUrl && (
           <img
             src={profile.profilePicUrl}
             alt={profile.fullName}
-            className="w-12 h-12 rounded-full object-cover"
+            className="w-12 h-12 rounded-full object-cover ring-2 ring-orange-200/50"
           />
         )}
         <div>
-          <p className="font-medium text-gray-900">
+          <p className="font-semibold text-gray-900">
             {profile.fullName || profile.username}
           </p>
-          <p className="text-sm text-gray-500">@{profile.username}</p>
+          <p className="text-sm text-gray-400">@{profile.username}</p>
         </div>
       </div>
 
       {profile.bio && (
-        <p className="text-sm text-gray-700 mb-3 whitespace-pre-line">
+        <p className="text-sm text-gray-600 mb-4 whitespace-pre-line leading-relaxed">
           {profile.bio}
         </p>
       )}
 
       <div className="grid grid-cols-3 gap-3 text-center">
-        <div className="bg-white rounded-lg p-2">
-          <Users className="w-4 h-4 mx-auto text-gray-400 mb-1" />
-          <p className="text-lg font-semibold text-gray-900">
+        <div className="glass-subtle rounded-xl p-3">
+          <Users className="w-4 h-4 mx-auto text-orange-400 mb-1.5" />
+          <p className="text-lg font-bold text-gray-900">
             {profile.followersCount.toLocaleString()}
           </p>
-          <p className="text-xs text-gray-500">Followers</p>
+          <p className="text-xs text-gray-400">Followers</p>
         </div>
-        <div className="bg-white rounded-lg p-2">
-          <Image className="w-4 h-4 mx-auto text-gray-400 mb-1" />
-          <p className="text-lg font-semibold text-gray-900">
+        <div className="glass-subtle rounded-xl p-3">
+          <Image className="w-4 h-4 mx-auto text-orange-400 mb-1.5" />
+          <p className="text-lg font-bold text-gray-900">
             {profile.postsCount.toLocaleString()}
           </p>
-          <p className="text-xs text-gray-500">Posty</p>
+          <p className="text-xs text-gray-400">Posty</p>
         </div>
-        <div className="bg-white rounded-lg p-2">
-          <ExternalLink className="w-4 h-4 mx-auto text-gray-400 mb-1" />
-          <p className="text-lg font-semibold text-gray-900">
+        <div className="glass-subtle rounded-xl p-3">
+          <ExternalLink className="w-4 h-4 mx-auto text-orange-400 mb-1.5" />
+          <p className="text-lg font-bold text-gray-900">
             {engagementRate ? `${engagementRate}%` : "N/A"}
           </p>
-          <p className="text-xs text-gray-500">Engagement</p>
+          <p className="text-xs text-gray-400">Engagement</p>
         </div>
       </div>
     </div>

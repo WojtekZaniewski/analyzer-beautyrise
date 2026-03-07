@@ -35,17 +35,17 @@ export default function ProblemChecklist({
       {PROBLEM_OPTIONS.map((option) => (
         <label
           key={option.id}
-          className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+          className={`flex items-center gap-3 p-3.5 rounded-xl cursor-pointer transition-all ${
             selected.includes(option.id)
-              ? "border-rose-400 bg-rose-50 text-rose-900"
-              : "border-gray-200 hover:border-gray-300 bg-white"
+              ? "glass border-orange-300/60 bg-orange-50/60 text-orange-900"
+              : "glass-subtle hover:bg-white/60 text-gray-600"
           }`}
         >
           <input
             type="checkbox"
             checked={selected.includes(option.id)}
             onChange={() => toggle(option.id)}
-            className="w-4 h-4 text-rose-500 rounded border-gray-300 focus:ring-rose-500"
+            className="w-4 h-4 text-orange-500 rounded border-gray-300/50 focus:ring-orange-400 accent-orange-500"
           />
           <span className="text-sm">{option.label}</span>
         </label>

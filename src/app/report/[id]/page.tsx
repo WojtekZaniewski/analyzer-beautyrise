@@ -13,7 +13,6 @@ export default function ReportPage() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    // Try sessionStorage first (set by AnalysisForm after analysis)
     const cached = sessionStorage.getItem(`report-${id}`);
     if (cached) {
       try {
@@ -24,7 +23,6 @@ export default function ReportPage() {
       }
     }
 
-    // Fallback: fetch from API
     fetch(`/api/reports/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error("Not found");
@@ -36,11 +34,13 @@ export default function ReportPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <p className="text-gray-500">Raport nie znaleziony</p>
-        <Link href="/" className="text-rose-600 hover:underline">
-          Powrot do formularza
-        </Link>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-5">
+        <div className="glass rounded-2xl p-8 text-center">
+          <p className="text-gray-400 mb-4">Raport nie znaleziony</p>
+          <Link href="/" className="text-orange-500 hover:text-orange-600 font-medium transition-colors">
+            Powrot do formularza
+          </Link>
+        </div>
       </div>
     );
   }
@@ -48,13 +48,16 @@ export default function ReportPage() {
   if (!report) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-rose-500 animate-spin" />
+        <div className="relative">
+          <div className="absolute inset-0 rounded-full bg-orange-400/20 blur-xl animate-pulse" />
+          <Loader2 className="relative w-10 h-10 text-orange-500 animate-spin" />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen py-12 px-4">
+    <div className="min-h-screen py-16 px-4">
       <ReportView report={report} />
     </div>
   );

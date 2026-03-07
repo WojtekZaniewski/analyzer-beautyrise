@@ -103,58 +103,58 @@ export default function AnalysisForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-7">
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+        <div className="p-4 glass-subtle rounded-2xl text-sm text-red-600 border border-red-200/40">
           {error}
         </div>
       )}
 
       {/* Salon Name */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Nazwa salonu *
+        <label className="block text-sm font-medium text-gray-600 mb-2 tracking-wide">
+          Nazwa salonu
         </label>
         <input
           {...register("salonName")}
           type="text"
           placeholder="np. Beauty Studio Anna"
-          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none"
+          className="w-full px-4 py-3 rounded-xl glass-input outline-none text-gray-900 placeholder:text-gray-300"
         />
         {errors.salonName && (
-          <p className="text-sm text-red-500 mt-1">{errors.salonName.message}</p>
+          <p className="text-sm text-red-500 mt-1.5">{errors.salonName.message}</p>
         )}
       </div>
 
       {/* Instagram Handle */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Instagram *
+        <label className="block text-sm font-medium text-gray-600 mb-2 tracking-wide">
+          Instagram
         </label>
         <div className="flex gap-2">
           <div className="relative flex-1">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400 font-medium">
               @
             </span>
             <input
               {...register("instagramHandle")}
               type="text"
               placeholder="nazwa_profilu"
-              className="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none"
+              className="w-full pl-9 pr-4 py-3 rounded-xl glass-input outline-none text-gray-900 placeholder:text-gray-300"
             />
           </div>
           <button
             type="button"
             onClick={fetchInstagram}
             disabled={igLoading}
-            className="px-4 py-2.5 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 flex items-center gap-2"
+            className="px-5 py-3 glass-subtle rounded-xl hover:bg-white/70 transition-all disabled:opacity-50 flex items-center gap-2 text-gray-600 font-medium text-sm"
           >
             <Search className="w-4 h-4" />
             {igLoading ? "Szukam..." : "Podglad"}
           </button>
         </div>
         {errors.instagramHandle && (
-          <p className="text-sm text-red-500 mt-1">
+          <p className="text-sm text-red-500 mt-1.5">
             {errors.instagramHandle.message}
           </p>
         )}
@@ -167,7 +167,7 @@ export default function AnalysisForm() {
 
       {/* Problem Categories */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-600 mb-3 tracking-wide">
           Kategorie problemow
         </label>
         <ProblemChecklist
@@ -178,17 +178,17 @@ export default function AnalysisForm() {
 
       {/* Problem Description */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Opis problemu *
+        <label className="block text-sm font-medium text-gray-600 mb-2 tracking-wide">
+          Opis problemu
         </label>
         <textarea
           {...register("problemDescription")}
           rows={4}
           placeholder="Opisz szczegolowo problem salonu, z czym sie zmaga, co chce osiagnac..."
-          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none resize-y"
+          className="w-full px-4 py-3 rounded-xl glass-input outline-none text-gray-900 placeholder:text-gray-300 resize-y"
         />
         {errors.problemDescription && (
-          <p className="text-sm text-red-500 mt-1">
+          <p className="text-sm text-red-500 mt-1.5">
             {errors.problemDescription.message}
           </p>
         )}
@@ -196,21 +196,21 @@ export default function AnalysisForm() {
 
       {/* Additional Notes */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-600 mb-2 tracking-wide">
           Dodatkowe uwagi
         </label>
         <textarea
           {...register("additionalNotes")}
           rows={2}
           placeholder="Opcjonalne dodatkowe informacje..."
-          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none resize-y"
+          className="w-full px-4 py-3 rounded-xl glass-input outline-none text-gray-900 placeholder:text-gray-300 resize-y"
         />
       </div>
 
       {/* Submit */}
       <button
         type="submit"
-        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-rose-600 text-white font-medium rounded-lg hover:bg-rose-700 transition-colors"
+        className="w-full flex items-center justify-center gap-2.5 px-6 py-3.5 btn-gradient text-white font-semibold rounded-2xl text-base"
       >
         <Send className="w-4 h-4" />
         Analizuj salon

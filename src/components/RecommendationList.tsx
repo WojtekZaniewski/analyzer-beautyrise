@@ -9,23 +9,20 @@ const priorityConfig = {
   high: {
     label: "Wysoki",
     icon: ArrowUp,
-    bg: "bg-red-50",
-    text: "text-red-700",
-    badge: "bg-red-100 text-red-700",
+    bg: "bg-red-50/50",
+    badge: "bg-red-500/10 text-red-600",
   },
   medium: {
     label: "Sredni",
     icon: ArrowRight,
-    bg: "bg-amber-50",
-    text: "text-amber-700",
-    badge: "bg-amber-100 text-amber-700",
+    bg: "bg-amber-50/50",
+    badge: "bg-amber-500/10 text-amber-600",
   },
   low: {
     label: "Niski",
     icon: ArrowDown,
-    bg: "bg-blue-50",
-    text: "text-blue-700",
-    badge: "bg-blue-100 text-blue-700",
+    bg: "bg-blue-50/50",
+    badge: "bg-blue-500/10 text-blue-600",
   },
 };
 
@@ -43,22 +40,22 @@ export default function RecommendationList({ items }: RecommendationListProps) {
         return (
           <div
             key={i}
-            className={`rounded-lg border border-gray-200 p-4 ${config.bg}`}
+            className={`rounded-2xl border border-white/40 backdrop-blur-sm p-5 ${config.bg}`}
           >
             <div className="flex items-start gap-3">
-              <div className={`shrink-0 px-2 py-1 rounded text-xs font-medium ${config.badge}`}>
+              <div className={`shrink-0 px-2.5 py-1 rounded-lg text-xs font-semibold ${config.badge}`}>
                 <Icon className="w-3 h-3 inline mr-1" />
                 {config.label}
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-sm font-semibold text-gray-900">
                   {item.action}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">
-                  <span className="font-medium">Obszar:</span> {item.area}
+                <p className="text-xs text-gray-400 mt-1.5">
+                  <span className="font-medium text-gray-500">Obszar:</span> {item.area}
                 </p>
-                <p className="text-xs text-gray-500">
-                  <span className="font-medium">Efekt:</span>{" "}
+                <p className="text-xs text-gray-400">
+                  <span className="font-medium text-gray-500">Efekt:</span>{" "}
                   {item.expectedImpact}
                 </p>
               </div>

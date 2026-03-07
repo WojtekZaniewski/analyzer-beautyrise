@@ -15,22 +15,27 @@ interface LoadingStateProps {
 
 export default function LoadingState({ step = 0 }: LoadingStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-16 gap-6">
-      <Loader2 className="w-12 h-12 text-rose-500 animate-spin" />
+    <div className="flex flex-col items-center justify-center py-20 gap-8">
+      <div className="relative">
+        <div className="absolute inset-0 rounded-full bg-orange-400/20 blur-xl animate-pulse" />
+        <Loader2 className="relative w-14 h-14 text-orange-500 animate-spin" />
+      </div>
       <div className="text-center">
-        <p className="text-lg font-medium text-gray-900">
+        <p className="text-xl font-semibold text-gray-900">
           Analizujemy salon...
         </p>
-        <p className="text-sm text-gray-500 mt-2">
+        <p className="text-sm text-gray-400 mt-2">
           {STEPS[Math.min(step, STEPS.length - 1)]}
         </p>
       </div>
-      <div className="flex gap-2 mt-4">
+      <div className="flex gap-2.5">
         {STEPS.map((_, i) => (
           <div
             key={i}
-            className={`w-2 h-2 rounded-full transition-colors ${
-              i <= step ? "bg-rose-500" : "bg-gray-200"
+            className={`w-2.5 h-2.5 rounded-full transition-all duration-500 ${
+              i <= step
+                ? "bg-gradient-to-r from-orange-500 to-amber-400 scale-110"
+                : "bg-gray-200/60"
             }`}
           />
         ))}

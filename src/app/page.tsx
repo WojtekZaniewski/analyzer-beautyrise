@@ -3,22 +3,22 @@ import { Sparkles } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="min-h-screen py-12 px-4">
+    <div className="min-h-screen py-16 px-4">
       <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-rose-50 text-rose-700 text-sm rounded-full mb-4">
-            <Sparkles className="w-4 h-4" />
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 glass-subtle rounded-full mb-5 text-sm text-orange-700 font-medium">
+            <Sparkles className="w-4 h-4 text-orange-500" />
             BeautyRise
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-4xl font-bold text-gradient tracking-tight">
             Salon Analyzer
           </h1>
-          <p className="text-gray-500 mt-2">
+          <p className="text-gray-400 mt-3 text-lg">
             Kompleksowa analiza AI salonow beauty
           </p>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+        <div className="glass rounded-3xl p-8">
           <AnalysisForm />
         </div>
       </div>

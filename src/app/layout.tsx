@@ -20,8 +20,9 @@ export default function RootLayout({
   return (
     <html lang="pl">
       <body
-        className={`${geistSans.variable} font-sans antialiased bg-gray-50 min-h-screen`}
+        className={`${geistSans.variable} font-sans antialiased min-h-screen`}
       >
+        <div className="mesh-gradient" aria-hidden="true" />
         {children}
       </body>
     </html>
