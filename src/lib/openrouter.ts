@@ -150,6 +150,8 @@ export async function runAnalysis(
       temperature: 0.3,
       responseMimeType: "application/json",
       responseSchema: analysisSchema,
+      // @ts-expect-error — thinkingConfig nie w typach SDK v0.24, ale API je akceptuje
+      thinkingConfig: { thinkingBudget: 0 },
     },
   });
 
