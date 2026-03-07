@@ -4,6 +4,7 @@ import { scrapeInstagram } from "@/lib/instagram";
 import { runAnalysis } from "@/lib/openrouter";
 import { SYSTEM_PROMPT, buildUserPrompt } from "@/lib/analysis-prompt";
 import { saveReport } from "@/lib/storage";
+import { sendReportEmail } from "@/lib/email";
 import { AnalysisReport } from "@/lib/types";
 
 const requestSchema = z.object({
@@ -50,8 +51,9 @@ export async function POST(req: Request) {
       analysis,
     };
 
-    // Save report
+    // Save report & send email notification
     await saveReport(report);
+    sendReportEmail(report).catch(console.error);
 
     return NextResponse.json(report);
   } catch (error) {
