@@ -7,8 +7,9 @@ export async function GET() {
   // Check env vars
   results.envVars = {
     OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY ? "SET (" + process.env.OPENROUTER_API_KEY.slice(0, 8) + "...)" : "MISSING",
-    GMAIL_USER: process.env.GMAIL_USER || "MISSING",
-    GMAIL_APP_PASSWORD: process.env.GMAIL_APP_PASSWORD ? "SET (length: " + process.env.GMAIL_APP_PASSWORD.length + ")" : "MISSING",
+    SMTP_HOST: process.env.SMTP_HOST || "(default: smtp.mail.me.com)",
+    SMTP_USER: process.env.SMTP_USER || "MISSING",
+    SMTP_PASSWORD: process.env.SMTP_PASSWORD ? "SET (length: " + process.env.SMTP_PASSWORD.length + ")" : "MISSING",
   };
 
   // Test OpenRouter
@@ -32,41 +33,21 @@ export async function GET() {
     results.openrouter = { error: String(err) };
   }
 
-  // Test OpenRouter with plugins
-  try {
-    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [{ role: "user", content: "Odpowiedz jednym slowem: OK" }],
-        max_tokens: 10,
-        plugins: [{ id: "web" }],
-      }),
-      signal: AbortSignal.timeout(15000),
-    });
-    const data = await res.json();
-    results.openrouterWithPlugins = { status: res.status, response: data.choices?.[0]?.message?.content ?? data };
-  } catch (err) {
-    results.openrouterWithPlugins = { error: String(err) };
-  }
-
-  // Test Gmail SMTP
+  // Test SMTP
   try {
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: process.env.SMTP_HOST || "smtp.mail.me.com",
+      port: Number(process.env.SMTP_PORT || 587),
+      secure: false,
       auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASSWORD,
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASSWORD,
       },
     });
     await transporter.verify();
-    results.gmail = { status: "OK - connection verified" };
+    results.smtp = { status: "OK - connection verified" };
   } catch (err) {
-    results.gmail = { error: String(err) };
+    results.smtp = { error: String(err) };
   }
 
   // Test Instagram scrape

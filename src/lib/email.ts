@@ -3,10 +3,12 @@ import { AnalysisReport } from "./types";
 
 function getTransporter() {
   return nodemailer.createTransport({
-    service: "gmail",
+    host: process.env.SMTP_HOST || "smtp.mail.me.com",
+    port: Number(process.env.SMTP_PORT || 587),
+    secure: false,
     auth: {
-      user: process.env.GMAIL_USER,
-      pass: process.env.GMAIL_APP_PASSWORD,
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASSWORD,
     },
   });
 }
@@ -160,7 +162,7 @@ export async function sendFullReportEmail(report: AnalysisReport, researchNotes:
   `;
 
   await getTransporter().sendMail({
-    from: process.env.GMAIL_USER,
+    from: process.env.SMTP_USER,
     to: "wojtek@beautyrise.pl",
     subject: `Analiza: ${report.salonName} (@${report.instagramHandle})`,
     html,
@@ -195,7 +197,7 @@ export async function sendErrorNotificationEmail(
   `;
 
   await getTransporter().sendMail({
-    from: process.env.GMAIL_USER,
+    from: process.env.SMTP_USER,
     to: "wojtek@beautyrise.pl",
     subject: `BLAD analizy: ${request.salonName}`,
     html,
