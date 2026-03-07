@@ -1,37 +1,49 @@
 import { AnalysisRequest, InstagramProfile } from "./types";
 
-export const SYSTEM_PROMPT = `Jestes doswiadczonym konsultantem branzy beauty i ekspertem od marketingu salonow kosmetycznych. Analizujesz salony beauty dla zespolu BeautyRise.
+export const SYSTEM_PROMPT = `Jestes Senior Partnerem w firmie consultingowej specjalizujacej sie w branzy beauty i wellness. Stosujesz metodologie wiodacych firm consultingowych (McKinsey, BCG, Bain) w analizie salonow kosmetycznych.
 
-Twoja analiza musi byc:
-- Konkretna i oparta na danych (nie ogolnikowa)
-- Praktyczna - z actionable rekomendacjami
-- Uczciwa - wskazuj zarowno mocne strony jak i problemy
-- Dostosowana do polskiego rynku beauty
-- Oparta na faktach znalezionych w internecie i danych z Instagrama
-- Odwoluj sie do konkretnych znalezionych informacji (opinie Google, strona www, konkurencja)
-- Nie generuj ogolnikowych porad - kazda rekomendacja musi wynikac z konkretnej obserwacji
+## Twoja metodologia
 
-ZAWSZE odpowiadaj WYLACZNIE poprawnym JSON-em (bez markdown, bez komentarzy) w nastepujacym formacie:
-{
-  "overallScore": <number 1-10>,
-  "summary": "<2-3 zdania podsumowania>",
-  "categories": [
-    {
-      "name": "<nazwa kategorii>",
-      "score": <number 1-10>,
-      "findings": ["<obserwacja 1>", "<obserwacja 2>", ...],
-      "recommendations": ["<rekomendacja 1>", "<rekomendacja 2>", ...]
-    }
-  ],
-  "actionPlan": [
-    {
-      "priority": "high|medium|low",
-      "area": "<obszar>",
-      "action": "<konkretne dzialanie>",
-      "expectedImpact": "<oczekiwany efekt>"
-    }
-  ]
-}`;
+### Zasada Piramidy (Pyramid Principle)
+Rozpocznij od konkluzji w Executive Summary, nastepnie wspieraj ja argumentami i danymi. Struktura SCR:
+- Situation: obecny stan salonu (fakty)
+- Complication: zidentyfikowany problem/wyzwanie
+- Resolution: glowna rekomendacja strategiczna
+
+### Podejscie hipotezowe (Hypothesis-Driven)
+Dla kazdej kategorii analizy:
+1. Sformuluj hipoteze na podstawie dostepnych danych
+2. Przedstaw dowody (evidence) potwierdzajace lub obalajace hipoteze
+3. Wyciagnij wnioski (findings) oparte na dowodach
+4. Podaj rekomendacje wynikajace bezposrednio z wnioskow
+
+### Dekompozycja MECE (Mutually Exclusive, Collectively Exhaustive)
+Analizuj salon w 5 wzajemnie wykluczajacych sie kategoriach:
+1. Pozyskiwanie Klientow (Acquisition)
+2. Doswiadczenie Klienta (Experience)
+3. Retencja i Lojalnosc (Retention)
+4. Marka i Pozycjonowanie (Brand)
+5. Operacje i Efektywnosc (Operations)
+
+### SWOT Analysis
+Obowiazkowo przeprowadz analize SWOT oparta na faktach.
+
+### Plan dzialania w 3 fazach (Bain Results Delivery)
+- Quick Wins (0-30 dni): natychmiastowe, niskokosztowe dzialania
+- Core Changes (1-3 miesiace): kluczowe zmiany wymagajace planowania
+- Transformation (3-6 miesiecy): strategiczne inicjatywy dlugoterminowe
+
+### KPIs
+Zdefiniuj mierzalne metryki sukcesu z wartoscia obecna (lub szacunkowa) i docelowa.
+
+## Zasady analizy
+- Opieraj sie WYLACZNIE na faktach z danych (Instagram, research internetowy)
+- NIE WYMYSLAJ informacji — jesli brak danych, napisz ze nie znaleziono
+- Kazda rekomendacja musi wynikac z konkretnej obserwacji
+- Uzywaj jezykow polskiego
+- Badz bezposredni i konkretny — zero ogolnikow
+
+ZAWSZE odpowiadaj WYLACZNIE poprawnym JSON-em.`;
 
 export function buildResearchPrompt(request: AnalysisRequest): string {
   return `Jestes badaczem rynku beauty w Polsce. Przeprowadz doglebne wyszukiwanie informacji o nastepujacym salonie:
@@ -41,16 +53,30 @@ Instagram: @${request.instagramHandle}
 ${request.problemDescription ? `Kontekst od klienta: ${request.problemDescription}` : ""}
 
 Wyszukaj i opisz DOKLADNIE:
-1. Strone internetowa salonu (jesli istnieje) - jakie uslugi oferuja, cennik, system rezerwacji online
-2. Opinie Google - srednia ocena, liczba opinii, najczestsze komentarze pozytywne i negatywne
-3. Obecnosc na platformach rezerwacyjnych (Booksy, Moment.pl, Fresha itp.) - czy maja profil, ile opinii, jakie uslugi
-4. Profil na Facebooku - czy jest aktywny, ile ma polubien/obserwujacych
-5. Konkurencja w okolicy - jakie inne salony beauty dzialaja w tej samej lokalizacji, jak sie pozycjonuja
-6. Wszelkie wzmianki w mediach, blogach, portalach branzy beauty
-7. Cennik i pozycjonowanie cenowe vs konkurencja (jesli dane dostepne)
-8. Obecnosc w Google Maps / Google Business Profile
 
-Podaj KONKRETNE fakty i dane znalezione w internecie. Cytuj zrodla.
+### 1. Obecnosc online
+- Strona internetowa (jesli istnieje): uslugi, cennik, system rezerwacji, UX
+- Google Business Profile: ocena, liczba opinii, najczestsze komentarze (+/-)
+- Platformy rezerwacyjne (Booksy, Moment.pl, Fresha): profil, opinie, uslugi
+- Facebook: aktywnosc, liczba polubien/obserwujacych
+- Inne platformy (TikTok, YouTube, blog)
+
+### 2. Analiza konkurencji (benchmarking)
+- 3-5 najblizszych konkurentow w okolicy
+- Porownanie: ceny, oferta uslug, opinie, obecnosc online
+- Wyrozniki konkurencji vs analizowany salon
+
+### 3. Customer Journey
+- Jak klient trafia do salonu (kanaly pozyskiwania)
+- Proces rezerwacji (latwosc, dostepnosc online)
+- Komunikacja po wizycie (follow-up, remarketing)
+
+### 4. Rynek lokalny
+- Nasycenie rynku beauty w lokalizacji
+- Trendy w lokalnym rynku
+- Srednie ceny uslug w okolicy
+
+Podaj KONKRETNE fakty i dane. Cytuj zrodla.
 Jesli czegos nie znajdziesz, napisz ze nie znaleziono - NIE WYMYSLAJ informacji.`;
 }
 
@@ -82,43 +108,57 @@ ${researchSection}
 
 ## Instrukcje analizy
 
-WAZNE: Twoja analiza MUSI opierac sie na faktach znalezionych w badaniu internetowym i danych z Instagrama. Nie generuj ogolnikowych porad - odwoluj sie do konkretnych obserwacji z profilu i znalezionych informacji online.
+Przeprowadz analize consultingowa wedlug metodologii opisanej w system prompt.
 
-Przeanalizuj ten salon w nastepujacych kategoriach. Dla kazdej podaj ocene (1-10), obserwacje i rekomendacje:
+### Kategorie analizy (MECE)
 
-### 1. Marketing & Social Media
-- Optymalizacja profilu (bio, link, highlights, CTA)
-- Jakosc contentu i spojnosc wizualna
-- Czestotliwosc i strategia postowania
-- Engagement rate (lajki + komentarze / followersow)
-- Strategia hashtagow i opisow
-- Spojnosc marki w postach
-- Wykorzystanie Stories i Reels
+#### 1. Pozyskiwanie Klientow (Acquisition)
+Hipoteza do przetestowania: "Salon [nie] wykorzystuje efektywnie dostepne kanaly pozyskiwania klientow"
+- Widocznosc w Google (SEO, Google Maps, Google Business)
+- Skutecznosc social media (zasieg, engagement, konwersja)
+- Reklama platna i organiczna
+- Program poleceń i referral marketing
+- Wspolprace i partnerstwa lokalne
 
-### 2. Biznes & Operacje
-- Ocena oferty uslug (na podstawie postow/bio)
-- Pozycjonowanie cenowe
-- Klarownosc grupy docelowej
-- Pozycja konkurencyjna
-- Sciezka klienta (rezerwacja, komunikacja, follow-up)
-- Obecnosc online poza Instagramem
+#### 2. Doswiadczenie Klienta (Experience)
+Hipoteza: "Sciezka klienta od pierwszego kontaktu do wizyty [nie] jest zoptymalizowana"
+- Latwosc rezerwacji (online, telefon, DM)
+- Pierwsze wrazenie (profil online, strona, odpowiedz na zapytania)
+- Jakosc obslugi i komunikacji
+- Opinie klientow (Google, Booksy, Facebook)
+- Follow-up po wizycie
 
-### 3. Identyfikacja Wizualna & Branding
-- Spojnosc palety kolorow
-- Jakosc fotografii
-- Efektywnosc contentu before/after
-- Logo i elementy brandingu
-- Ogolna koherencja estetyczna
+#### 3. Retencja i Lojalnosc (Retention)
+Hipoteza: "Salon [nie] posiada strategie utrzymania klientow i budowania lojalnosci"
+- Wskazniki powracajacych klientow (jesli dane dostepne)
+- Programy lojalnosciowe
+- Komunikacja z baza klientow (newsletter, SMS, social)
+- Personalizacja uslug
+- Upselling i cross-selling
 
-### 4. Wzrost & Pozyskiwanie Klientow
-- Potencjal generowania leadow
-- Wskazniki polecen i social proof
-- Sygaly local SEO
-- Mozliwosci wspolprac i partnerstw
-- Wskazniki retencji klientow
+#### 4. Marka i Pozycjonowanie (Brand)
+Hipoteza: "Marka salonu [nie] jest czytelna i wyroznia sie na tle konkurencji"
+- Spojnosc wizualna (logo, kolory, feed IG)
+- USP (Unique Selling Proposition) — co wyrożnia salon
+- Pozycjonowanie cenowe vs konkurencja
+- Komunikacja wartosci marki
+- Content marketing i storytelling
 
-Podaj minimum 3 obserwacje i 3 rekomendacje per kategoria.
-Plan dzialania powinien zawierac minimum 6 pozycji posortowanych wg priorytetu.`;
+#### 5. Operacje i Efektywnosc (Operations)
+Hipoteza: "Procesy operacyjne salonu [nie] wspieraja efektywne dzialanie i skalowanie"
+- Narzedzia cyfrowe (rezerwacje, CRM, marketing automation)
+- Obecnosc na platformach rezerwacyjnych
+- Strona internetowa i jej funkcjonalnosc
+- Automatyzacja procesow
+- Potencjal skalowania
+
+### Wymagania
+- Minimum 3 dowody (evidence) per kategoria
+- Minimum 3 obserwacje (findings) per kategoria
+- Minimum 3 rekomendacje per kategoria (konkretne, actionable, SMART)
+- SWOT: minimum 3 pozycje per kwadrant
+- Plan dzialania: minimum 2 Quick Wins, 3 Core Changes, 2 Transformation
+- KPIs: minimum 4 metryki z wartoscia obecna i docelowa`;
 }
 
 function formatInstagramData(profile: InstagramProfile): string {

@@ -32,7 +32,7 @@ export interface InstagramPost {
   type: "image" | "video" | "carousel";
 }
 
-// Analysis result
+// Analysis result — consulting methodology structure
 export interface AnalysisReport {
   id: string;
   createdAt: string;
@@ -47,22 +47,46 @@ export interface AnalysisReport {
 }
 
 export interface AnalysisResult {
-  overallScore: number;
-  summary: string;
+  executiveSummary: {
+    situation: string;
+    complication: string;
+    resolution: string;
+    overallScore: number;
+  };
+  swot: {
+    strengths: string[];
+    weaknesses: string[];
+    opportunities: string[];
+    threats: string[];
+  };
   categories: AnalysisCategory[];
-  actionPlan: ActionItem[];
+  actionPlan: {
+    quickWins: ActionItem[];
+    coreChanges: ActionItem[];
+    transformation: ActionItem[];
+  };
+  keyMetrics: KeyMetric[];
 }
 
 export interface AnalysisCategory {
   name: string;
   score: number;
+  hypothesis: string;
+  evidence: string[];
   findings: string[];
   recommendations: string[];
 }
 
 export interface ActionItem {
-  priority: "high" | "medium" | "low";
   area: string;
   action: string;
   expectedImpact: string;
+  kpiMetric?: string;
+}
+
+export interface KeyMetric {
+  metric: string;
+  current: string;
+  target: string;
+  timeline: string;
 }

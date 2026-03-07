@@ -52,7 +52,7 @@ export async function POST(req: Request) {
       const userPrompt = buildUserPrompt(request, instagramData, researchResults);
       const analysis = await runAnalysis(SYSTEM_PROMPT, userPrompt);
 
-      console.log("[analyze] Phase 2 done. Score:", analysis.overallScore);
+      console.log("[analyze] Phase 2 done. Score:", analysis.executiveSummary.overallScore);
 
       const report: AnalysisReport = {
         id: crypto.randomUUID(),
