@@ -83,12 +83,20 @@ export async function POST(req: Request) {
       const errMsg = error instanceof Error ? error.message : String(error);
       const errStack = error instanceof Error ? error.stack : undefined;
       console.error("[analyze] Pipeline failed:", errMsg, errStack);
-      await sendErrorNotificationEmail(request, error).catch((emailErr) =>
-        console.error("[analyze] Error email also failed:", emailErr)
-      );
+      const is429 = errMsg.includes("429") || errMsg.includes("quota");
+      if (!is429) {
+        await sendErrorNotificationEmail(request, error).catch((emailErr) =>
+          console.error("[analyze] Error email also failed:", emailErr)
+        );
+      }
       return NextResponse.json(
-        { error: "Wystapil blad podczas analizy. Sprobuj ponownie.", debug: errMsg },
-        { status: 500 }
+        {
+          error: is429
+            ? "Dzienny limit analiz zostal wyczerpany. Sprobuj ponownie jutro."
+            : "Wystapil blad podczas analizy. Sprobuj ponownie.",
+          debug: errMsg,
+        },
+        { status: is429 ? 429 : 500 }
       );
     }
   } catch (error) {
