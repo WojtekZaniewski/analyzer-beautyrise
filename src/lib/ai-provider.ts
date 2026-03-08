@@ -1,54 +1,66 @@
+import OpenAI from "openai";
 import { AnalysisResult } from "./types";
 
-const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
-const FREE_MODEL = "meta-llama/llama-3.3-70b-instruct:free";
+const providers = [
+  {
+    name: "cerebras",
+    baseURL: "https://api.cerebras.ai/v1",
+    apiKey: process.env.CEREBRAS_API_KEY,
+    model: "llama-3.1-8b",
+  },
+  {
+    name: "google",
+    baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
+    apiKey: process.env.GOOGLE_AI_API_KEY,
+    model: "gemini-2.5-flash",
+  },
+];
 
-interface ChatMessage {
-  role: "system" | "user" | "assistant";
-  content: string;
-}
-
-async function callOpenRouter(params: {
-  messages: ChatMessage[];
+async function callWithFallback(params: {
+  messages: { role: "system" | "user" | "assistant"; content: string }[];
   maxTokens?: number;
   temperature?: number;
   jsonMode?: boolean;
 }): Promise<string> {
-  const response = await fetch(OPENROUTER_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: FREE_MODEL,
-      messages: params.messages,
-      max_tokens: params.maxTokens || 4000,
-      temperature: params.temperature || 0.3,
-      ...(params.jsonMode && { response_format: { type: "json_object" } }),
-    }),
-    signal: AbortSignal.timeout(55000),
-  });
+  let lastError: unknown;
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`OpenRouter ${response.status}: ${errorText.slice(0, 500)}`);
+  for (const provider of providers) {
+    if (!provider.apiKey) continue;
+
+    try {
+      const client = new OpenAI({
+        baseURL: provider.baseURL,
+        apiKey: provider.apiKey,
+      });
+
+      const response = await client.chat.completions.create({
+        model: provider.model,
+        messages: params.messages,
+        max_tokens: params.maxTokens || 4000,
+        temperature: params.temperature || 0.3,
+        ...(params.jsonMode && { response_format: { type: "json_object" as const } }),
+      });
+
+      const content = response.choices[0]?.message?.content;
+      if (!content) {
+        throw new Error(`${provider.name} returned empty response`);
+      }
+
+      console.log(`[${provider.name}] Success, length: ${content.length}`);
+      return content;
+    } catch (error) {
+      console.error(`[${provider.name}] AI provider failed:`, error);
+      lastError = error;
+    }
   }
 
-  const data = await response.json();
-
-  if (!data.choices?.[0]?.message?.content) {
-    console.error("[openrouter] Unexpected response:", JSON.stringify(data).slice(0, 500));
-    throw new Error("OpenRouter returned empty response");
-  }
-
-  return data.choices[0].message.content;
+  throw lastError ?? new Error("No AI providers configured");
 }
 
 export async function runResearch(prompt: string): Promise<string> {
   try {
     console.log("[research] Starting...");
-    const text = await callOpenRouter({
+    const text = await callWithFallback({
       messages: [{ role: "user", content: prompt }],
       maxTokens: 4000,
       temperature: 0.3,
@@ -66,7 +78,7 @@ export async function runAnalysis(
   userPrompt: string
 ): Promise<AnalysisResult> {
   console.log("[analysis] Starting...");
-  const content = await callOpenRouter({
+  const content = await callWithFallback({
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt },
