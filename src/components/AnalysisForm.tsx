@@ -77,8 +77,16 @@ export default function AnalysisForm() {
       });
 
       if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || "Blad analizy");
+        let message = "Wystapil blad podczas analizy. Sprobuj ponownie.";
+        try {
+          const err = await res.json();
+          message = err.error || message;
+        } catch {
+          if (res.status === 504 || res.status === 502) {
+            message = "Analiza trwala zbyt dlugo. Sprobuj ponownie za chwile.";
+          }
+        }
+        throw new Error(message);
       }
 
       setSubmitted(true);
