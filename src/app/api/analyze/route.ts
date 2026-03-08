@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { scrapeInstagram } from "@/lib/instagram";
-import { runResearch, runAnalysis } from "@/lib/openrouter";
+import { runResearch, runAnalysis } from "@/lib/ai-provider";
 import { SYSTEM_PROMPT, buildResearchPrompt, buildUserPrompt } from "@/lib/analysis-prompt";
 import { sendFullReportEmail, sendErrorNotificationEmail } from "@/lib/email";
 import { scrapeWebsite } from "@/lib/web-scraper";

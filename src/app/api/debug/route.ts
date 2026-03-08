@@ -1,51 +1,52 @@
 import { NextResponse } from "next/server";
-import nodemailer from "nodemailer";
 
 export async function GET() {
   const results: Record<string, unknown> = {};
 
   results.envVars = {
-    OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY ? "SET (" + process.env.OPENROUTER_API_KEY.slice(0, 8) + "...)" : "MISSING",
-    SMTP_HOST: process.env.SMTP_HOST || "(default: smtp.mail.me.com)",
-    SMTP_USER: process.env.SMTP_USER || "MISSING",
-    SMTP_PASSWORD: process.env.SMTP_PASSWORD ? "SET (length: " + process.env.SMTP_PASSWORD.length + ")" : "MISSING",
+    CEREBRAS_API_KEY: process.env.CEREBRAS_API_KEY ? "SET (" + process.env.CEREBRAS_API_KEY.slice(0, 8) + "...)" : "MISSING",
+    GOOGLE_AI_API_KEY: process.env.GOOGLE_AI_API_KEY ? "SET (" + process.env.GOOGLE_AI_API_KEY.slice(0, 8) + "...)" : "MISSING",
+    RESEND_API_KEY: process.env.RESEND_API_KEY ? "SET (" + process.env.RESEND_API_KEY.slice(0, 8) + "...)" : "MISSING",
   };
 
-  // Test OpenRouter
+  // Test Cerebras
   try {
-    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    const res = await fetch("https://api.cerebras.ai/v1/chat/completions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        Authorization: `Bearer ${process.env.CEREBRAS_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "meta-llama/llama-3.3-70b-instruct:free",
+        model: "llama-3.1-8b",
         messages: [{ role: "user", content: "Odpowiedz jednym slowem: OK" }],
         max_tokens: 10,
       }),
     });
     const data = await res.json();
-    results.openrouter = { status: res.ok ? "OK" : "ERROR", response: data.choices?.[0]?.message?.content || data };
+    results.cerebras = { status: res.ok ? "OK" : "ERROR", response: data.choices?.[0]?.message?.content || data };
   } catch (err) {
-    results.openrouter = { error: String(err) };
+    results.cerebras = { error: String(err) };
   }
 
-  // Test SMTP
+  // Test Google AI
   try {
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || "smtp.mail.me.com",
-      port: Number(process.env.SMTP_PORT || 587),
-      secure: false,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASSWORD,
+    const res = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.GOOGLE_AI_API_KEY}`,
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        model: "gemini-2.5-flash",
+        messages: [{ role: "user", content: "Odpowiedz jednym slowem: OK" }],
+        max_tokens: 10,
+      }),
     });
-    await transporter.verify();
-    results.smtp = { status: "OK - connection verified" };
+    const data = await res.json();
+    results.google = { status: res.ok ? "OK" : "ERROR", response: data.choices?.[0]?.message?.content || data };
   } catch (err) {
-    results.smtp = { error: String(err) };
+    results.google = { error: String(err) };
   }
 
   return NextResponse.json(results, { status: 200 });

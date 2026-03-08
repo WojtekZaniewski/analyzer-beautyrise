@@ -3,7 +3,7 @@ import { AnalysisReport } from "./types";
 
 function getTransporter() {
   return nodemailer.createTransport({
-    host: process.env.SMTP_HOST || "smtp.mail.me.com",
+    host: process.env.SMTP_HOST || "smtp-relay.brevo.com",
     port: Number(process.env.SMTP_PORT || 587),
     secure: false,
     auth: {
@@ -223,7 +223,7 @@ export async function sendFullReportEmail(report: AnalysisReport, researchNotes:
   `;
 
   await getTransporter().sendMail({
-    from: process.env.SMTP_USER,
+    from: '"BeautyRise" <wojtekzaniewski@icloud.com>',
     to: "wojtek@beautyrise.pl",
     subject: `Raport: ${report.salonName} (@${report.instagramHandle})`,
     html,
@@ -258,7 +258,7 @@ export async function sendErrorNotificationEmail(
   `;
 
   await getTransporter().sendMail({
-    from: process.env.SMTP_USER,
+    from: '"BeautyRise" <wojtekzaniewski@icloud.com>',
     to: "wojtek@beautyrise.pl",
     subject: `BLAD analizy: ${request.salonName}`,
     html,
