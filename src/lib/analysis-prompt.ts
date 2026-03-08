@@ -78,14 +78,14 @@ ZAWSZE odpowiadaj WYLACZNIE poprawnym JSON-em zgodnym z ponizszym schema:
   ]
 }
 
-WAZNE: Odpowiedz MUSI byc TYLKO JSON — bez zadnego tekstu przed ani po JSON-ie. Nie uzywaj markdown code blocks.`;
+WAZNE: Odpowiedz MUSI byc TYLKO JSON — bez zadnego tekstu przed ani po JSON-ie. Nie uzywaj markdown code blocks. Kazdy string w JSON ma byc zwiezly — maksymalnie 2 zdania.`;
 
 export function buildResearchPrompt(request: AnalysisRequest): string {
   const websiteNote = request.websiteUrl
     ? `Strona www: ${request.websiteUrl} — wyszukaj ja i opisz zawartosc (uslugi, cennik, rezerwacje, UX).`
     : `Wyszukaj strone internetowa salonu "${request.salonName}" jesli istnieje.`;
 
-  return `Jestes badaczem rynku beauty w Polsce. Masz dostep do wyszukiwarki Google — KORZYSTAJ z niej aktywnie.
+  return `Jestes badaczem rynku beauty w Polsce. Analizujesz salony kosmetyczne na podstawie dostepnych informacji.
 
 ## Salon do zbadania
 Nazwa: ${request.salonName}
@@ -94,31 +94,27 @@ ${websiteNote}
 ${request.problemDescription ? `Kontekst od klienta: ${request.problemDescription}` : ""}
 
 ## INSTRUKCJE
-Wyszukaj w Google nastepujace zapytania i opisz co FAKTYCZNIE znalazles:
+Na podstawie swojej wiedzy opisz co wiesz o tym salonie i jego otoczeniu rynkowym:
 
-### 1. Wyszukaj: "${request.salonName}" salon
-- Strona internetowa: URL, uslugi, cennik, system rezerwacji
-- Google Business Profile: ocena gwiazdkowa, liczba opinii, przykladowe opinie (+/-)
-- Booksy / Moment.pl / Fresha: czy istnieje profil, opinie
-- Facebook: czy istnieje fanpage, ile polubien
-- TikTok, YouTube, blog: czy istnieja
+### 1. Salon: "${request.salonName}"
+- Czy znasz ten salon? Jesli tak — opisz co wiesz
+- Typowe uslugi i cennik salonow kosmetycznych w tym segmencie
+- Platformy rezerwacyjne popularne w Polsce (Booksy, Moment.pl, Fresha)
 
-### 2. Wyszukaj: "${request.salonName}" opinie
-- Zbierz prawdziwe opinie klientow z roznych zrodel
-- Podsumuj najczestsze pozytywy i negatywy
+### 2. Rynek beauty w Polsce
+- Trendy w branzy beauty i wellness
+- Typowe wyzwania salonow kosmetycznych
+- Best practices w marketingu salonow
 
-### 3. Wyszukaj: salon kosmetyczny + lokalizacja (jesli mozesz ustalic z nazwy/IG)
-- 3-5 konkurentow w okolicy z ich ocenami Google
-- Porownanie cen i oferty
-
-### 4. Wyszukaj: @${request.instagramHandle} instagram
-- Opis profilu, liczba obserwujacych, rodzaj tresci
+### 3. Instagram @${request.instagramHandle}
+- Jesli znasz ten profil — opisz co wiesz
+- Jesli nie — opisz typowe strategie IG dla salonow beauty
 
 ## ZASADY
-- Podaj TYLKO informacje ktore faktycznie znalazles w wyszukiwarce
-- Przy kazdej informacji podaj zrodlo (URL lub nazwa platformy)
-- Jesli czegos NIE ZNALAZLES — napisz wyraznie "Nie znaleziono" zamiast wymyslac
-- NIE GENERUJ fikcyjnych danych, ocen ani opinii`;
+- Podaj TYLKO informacje co do ktorych masz pewnosc
+- Jesli czegos NIE WIESZ — napisz wyraznie "Brak danych" zamiast wymyslac
+- NIE GENERUJ fikcyjnych danych, ocen, opinii ani URLi
+- Wyraznie zaznacz co jest faktem, a co ogolna wiedza branżowa`;
 }
 
 export function buildUserPrompt(
@@ -153,8 +149,8 @@ ${igSection}
 ## Zawartosc strony internetowej
 ${websiteSection}
 
-## Wyniki badania internetowego (z Google Search)
-${researchSection}
+## Wyniki badania internetowego
+${researchSection || "Brak danych z wyszukiwania internetowego."}
 
 ## Instrukcje analizy
 
@@ -167,48 +163,39 @@ Hipoteza do przetestowania: "Salon [nie] wykorzystuje efektywnie dostepne kanaly
 - Widocznosc w Google (SEO, Google Maps, Google Business)
 - Skutecznosc social media (zasieg, engagement, konwersja)
 - Reklama platna i organiczna
-- Program poleceń i referral marketing
-- Wspolprace i partnerstwa lokalne
+- Program polecen i referral marketing
 
 #### 2. Doswiadczenie Klienta (Experience)
 Hipoteza: "Sciezka klienta od pierwszego kontaktu do wizyty [nie] jest zoptymalizowana"
 - Latwosc rezerwacji (online, telefon, DM)
 - Pierwsze wrazenie (profil online, strona, odpowiedz na zapytania)
-- Jakosc obslugi i komunikacji
 - Opinie klientow (Google, Booksy, Facebook)
-- Follow-up po wizycie
 
 #### 3. Retencja i Lojalnosc (Retention)
 Hipoteza: "Salon [nie] posiada strategie utrzymania klientow i budowania lojalnosci"
-- Wskazniki powracajacych klientow (jesli dane dostepne)
 - Programy lojalnosciowe
 - Komunikacja z baza klientow (newsletter, SMS, social)
-- Personalizacja uslug
 - Upselling i cross-selling
 
 #### 4. Marka i Pozycjonowanie (Brand)
 Hipoteza: "Marka salonu [nie] jest czytelna i wyroznia sie na tle konkurencji"
 - Spojnosc wizualna (logo, kolory, feed IG)
-- USP (Unique Selling Proposition) — co wyrożnia salon
-- Pozycjonowanie cenowe vs konkurencja
-- Komunikacja wartosci marki
+- USP (Unique Selling Proposition)
 - Content marketing i storytelling
 
 #### 5. Operacje i Efektywnosc (Operations)
 Hipoteza: "Procesy operacyjne salonu [nie] wspieraja efektywne dzialanie i skalowanie"
 - Narzedzia cyfrowe (rezerwacje, CRM, marketing automation)
-- Obecnosc na platformach rezerwacyjnych
 - Strona internetowa i jej funkcjonalnosc
-- Automatyzacja procesow
 - Potencjal skalowania
 
 ### Wymagania
-- Minimum 3 dowody (evidence) per kategoria
-- Minimum 3 obserwacje (findings) per kategoria
-- Minimum 3 rekomendacje per kategoria (konkretne, actionable, SMART)
-- SWOT: minimum 3 pozycje per kwadrant
-- Plan dzialania: minimum 2 Quick Wins, 3 Core Changes, 2 Transformation
-- KPIs: minimum 4 metryki z wartoscia obecna i docelowa`;
+- 2 dowody (evidence) per kategoria — zwiezle, max 2 zdania
+- 2 obserwacje (findings) per kategoria — zwiezle, max 2 zdania
+- 2 rekomendacje per kategoria — konkretne, actionable, max 2 zdania
+- SWOT: 2 pozycje per kwadrant — zwiezle, max 1 zdanie kazda
+- Plan dzialania: 2 Quick Wins, 2 Core Changes, 1 Transformation
+- KPIs: 3 metryki z wartoscia obecna i docelowa`;
 }
 
 function formatInstagramData(profile: InstagramProfile): string {
