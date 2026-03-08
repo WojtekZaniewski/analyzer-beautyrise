@@ -223,7 +223,7 @@ export async function sendFullReportEmail(report: AnalysisReport, researchNotes:
   `;
 
   await getTransporter().sendMail({
-    from: `"BeautyRise" <${process.env.SMTP_USER}>`,
+    from: '"BeautyRise" <wojtekzaniewski@icloud.com>',
     to: "wojtek@beautyrise.pl",
     subject: `Raport: ${report.salonName} (@${report.instagramHandle})`,
     html,
@@ -258,7 +258,7 @@ export async function sendErrorNotificationEmail(
   `;
 
   await getTransporter().sendMail({
-    from: `"BeautyRise" <${process.env.SMTP_USER}>`,
+    from: '"BeautyRise" <wojtekzaniewski@icloud.com>',
     to: "wojtek@beautyrise.pl",
     subject: `BLAD analizy: ${request.salonName}`,
     html,
