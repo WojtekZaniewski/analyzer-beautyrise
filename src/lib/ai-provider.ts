@@ -38,7 +38,8 @@ async function callWithFallback(params: {
         messages: params.messages,
         max_tokens: params.maxTokens || 4000,
         temperature: params.temperature || 0.3,
-        ...(params.jsonMode && { response_format: { type: "json_object" as const } }),
+        // jsonMode only for Google (Cerebras doesn't support response_format)
+        ...(params.jsonMode && provider.name === "google" && { response_format: { type: "json_object" as const } }),
       });
 
       const content = response.choices[0]?.message?.content;
@@ -91,8 +92,14 @@ export async function runAnalysis(
   console.log("[analysis] Done, length:", content.length);
   console.log("[analysis] First 300 chars:", content.slice(0, 300));
 
+  // Try direct parse first, then extract from markdown code block
+  const jsonStr = (() => {
+    const match = content.match(/```(?:json)?\s*([\s\S]*?)```/);
+    return match ? match[1].trim() : content.trim();
+  })();
+
   try {
-    return JSON.parse(content) as AnalysisResult;
+    return JSON.parse(jsonStr) as AnalysisResult;
   } catch (err) {
     console.error("[analysis] JSON parse failed:", err);
     console.error("[analysis] Full content:", content.slice(0, 1000));

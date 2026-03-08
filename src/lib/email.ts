@@ -1,16 +1,8 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import { AnalysisReport } from "./types";
 
-function getTransporter() {
-  return nodemailer.createTransport({
-    host: process.env.SMTP_HOST || "smtp.mail.me.com",
-    port: Number(process.env.SMTP_PORT || 587),
-    secure: false,
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASSWORD,
-    },
-  });
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY);
 }
 
 function esc(text: string): string {
@@ -222,8 +214,8 @@ export async function sendFullReportEmail(report: AnalysisReport, researchNotes:
     </div>
   `;
 
-  await getTransporter().sendMail({
-    from: process.env.SMTP_USER,
+  await getResend().emails.send({
+    from: "onboarding@resend.dev",
     to: "wojtek@beautyrise.pl",
     subject: `Raport: ${report.salonName} (@${report.instagramHandle})`,
     html,
@@ -257,8 +249,8 @@ export async function sendErrorNotificationEmail(
     </div>
   `;
 
-  await getTransporter().sendMail({
-    from: process.env.SMTP_USER,
+  await getResend().emails.send({
+    from: "onboarding@resend.dev",
     to: "wojtek@beautyrise.pl",
     subject: `BLAD analizy: ${request.salonName}`,
     html,
