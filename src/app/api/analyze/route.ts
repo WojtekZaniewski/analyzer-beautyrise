@@ -9,6 +9,16 @@ import { AnalysisReport } from "@/lib/types";
 
 export const maxDuration = 60;
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: corsHeaders });
+}
+
 const requestSchema = z.object({
   salonName: z.string().min(1),
   instagramHandle: z.string().min(1),
@@ -67,7 +77,7 @@ export async function POST(req: Request) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: "Nieprawidlowe dane formularza", details: parsed.error.flatten() },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -77,7 +87,7 @@ export async function POST(req: Request) {
     // If it fails, return error to user
     try {
       await runPipeline(request);
-      return NextResponse.json({ success: true });
+      return NextResponse.json({ success: true }, { headers: corsHeaders });
     } catch (error) {
       const errMsg = error instanceof Error ? error.message : String(error);
       console.error("[analyze] Pipeline failed:", errMsg);
@@ -94,7 +104,7 @@ export async function POST(req: Request) {
             : "Wystapil blad podczas analizy. Sprobuj ponownie.",
           debug: errMsg,
         },
-        { status: isRateLimit ? 429 : 500 }
+        { status: isRateLimit ? 429 : 500, headers: corsHeaders }
       );
     }
   } catch (error) {
@@ -102,7 +112,7 @@ export async function POST(req: Request) {
     console.error("[analyze] Request parse error:", errMsg);
     return NextResponse.json(
       { error: "Wystapil blad podczas analizy. Sprobuj ponownie.", debug: errMsg },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }
